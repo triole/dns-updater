@@ -1,4 +1,0 @@
-# save autorun definitions
-# https://atom.io/packages/save-autorun
-
-"**/*.*": "gog -w ${path} -b --pidlock"

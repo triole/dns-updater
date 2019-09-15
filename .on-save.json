@@ -1,0 +1,6 @@
+[{
+    "srcDir": ".",
+    "destDir": "/tmp/.on-save",
+    "files": "**/*.go",
+    "command": "goimports -w '${srcFile}' && go fmt '${srcFile}' "
+}]
