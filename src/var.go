@@ -4,8 +4,8 @@ import (
 	"olibs/environment"
 	"olibs/logging"
 	"os"
-	"regexp"
-	"strings"
+
+	kingpin "gopkg.in/alecthomas/kingpin.v2"
 )
 
 var (
@@ -26,24 +26,14 @@ var (
 	requrl   = "http://update.spdns.de/nic/update?hostname=" + hostname + "&myip=[IP]"
 
 	err error
+
+	app       = kingpin.New(appName, appDescription)
+	argsForce = app.Flag("force", "force update request irrespective of the current ip").Short('f').Default("False").Bool()
 )
 
 func argparse() {
-	rxHelp, _ := regexp.Compile("(-h|--help)")
-	rxVersion, _ := regexp.Compile("(-v|--version)")
-
-	s := strings.Join(os.Args[1:], " ")
-	if rxHelp.MatchString(s) == true {
-		println("\nThere are only two available arguments:\n")
-		println("\t -h, --help\tdisplay help")
-		println("\t -v, --version\tdisplay version information")
-		println("\n")
-		os.Exit(0)
-	}
-
-	s = strings.Join(os.Args[1:], " ")
-	if rxVersion.MatchString(s) == true {
-		println(env.AppInfoString)
-		os.Exit(0)
-	}
+	app.Version(env.AppInfoString)
+	app.VersionFlag.Short('V')
+	app.HelpFlag.Short('h')
+	kingpin.MustParse(app.Parse(os.Args[1:]))
 }

@@ -12,7 +12,10 @@ func main() {
 		os.Exit(1)
 	} else {
 		b := didIPChange(currentIPData)
-		if b == true {
+		if b == true || *argsForce == true {
+			if *argsForce == true {
+				lg.Log("Force update request irrespective of the current ip")
+			}
 			writeIPDataJSON(currentIPData)
 			updateDNS(currentIPData.IP)
 		}
