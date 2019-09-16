@@ -27,8 +27,9 @@ var (
 
 	err error
 
-	app       = kingpin.New(appName, appDescription)
-	argsForce = app.Flag("force", "force update request irrespective of the current ip").Short('f').Default("False").Bool()
+	app         = kingpin.New(appName, appDescription)
+	argsForce   = app.Flag("force", "force update request irrespective of the current ip").Short('f').Default("False").Bool()
+	argsLogfile = app.Flag("logfile", "logfile location").Short('l').Default(env.Logfile).String()
 )
 
 func argparse() {
@@ -36,4 +37,7 @@ func argparse() {
 	app.VersionFlag.Short('V')
 	app.HelpFlag.Short('h')
 	kingpin.MustParse(app.Parse(os.Args[1:]))
+	if *argsLogfile != env.Logfile {
+		lg = logging.Init(*argsLogfile)
+	}
 }
