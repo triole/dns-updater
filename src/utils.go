@@ -32,7 +32,7 @@ func getCurrentIPData() (ipd IPData) {
 }
 
 func updateDNS(ip string) {
-	lg.Logf("Updating ip at dns service. New ip is %v", ip)
 	url := strings.Replace(requrl, "[IP]", ip, 1)
+	lg.Logf("Updating ip at dns service. Request %q", url)
 	makeUpdateRequest(url)
 }

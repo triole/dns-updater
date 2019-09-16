@@ -13,7 +13,7 @@ var (
 	BUILDTAGS      string
 	appName        = "dns-updater"
 	appMainversion = "0"
-	appDescription = "Sends update requests containing the current external ip tp a dns service."
+	appDescription = "Sends update requests containing the current external ip to a dns service."
 	env            = environment.Init(appName, appMainversion, appDescription, BUILDTAGS)
 
 	lg = logging.Init(env.Logfile)
@@ -23,7 +23,7 @@ var (
 	// dns service settings
 	hostname = "***REMOVED***"
 	token    = "***REMOVED***"
-	requrl   = "http://update.spdns.de/nic/update?hostname=" + hostname + "&myip=[IP]"
+	requrl   = "***REMOVED***"
 
 	err error
 
