@@ -1,3 +1,0 @@
-x86_64:  GOOS=linux GOARCH=amd64
-armv6l: GOARM=6 GOARCH=arm
-armv7l: GOARM=7 GOARCH=arm
