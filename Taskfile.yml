@@ -31,7 +31,7 @@ tasks:
 
     build: >-
             bob -b V -c
-            -l '_subversion: {{.GIT_COMMIT_NO}}, Author: {{.AUTHOR}},
+            -f '_subversion: {{.GIT_COMMIT_NO}}, Author: {{.AUTHOR}},
             Build date: {{.DATE}}, Git hash: {{.GIT_COMMIT_HASH}}'
 
     test:
