@@ -3,12 +3,12 @@ package main
 import "os"
 
 func main() {
+	var err error
 	argparse()
 
 	currentIPData := getCurrentIPData()
-
 	if currentIPData.IP == "" {
-		println("None of the made requests did return a valid IP address.")
+		lg.Log("None of the made requests did return a valid IP address.")
 		os.Exit(1)
 	} else {
 		b := didIPChange(currentIPData)
@@ -17,7 +17,10 @@ func main() {
 				lg.Log("Force update request irrespective of the current ip")
 			}
 			writeIPDataJSON(currentIPData)
-			updateDNS(currentIPData.IP)
+			err = updateDNS(currentIPData.IP)
+			if err != nil {
+				os.Exit(1)
+			}
 		}
 	}
 }

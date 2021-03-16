@@ -25,8 +25,6 @@ var (
 	token    = "***REMOVED***"
 	requrl   = "***REMOVED***"
 
-	err error
-
 	app         = kingpin.New(appName, appDescription)
 	argsForce   = app.Flag("force", "force update request irrespective of the current ip").Short('f').Default("False").Bool()
 	argsLogfile = app.Flag("logfile", "logfile location").Short('l').Default(env.Logfile).String()
