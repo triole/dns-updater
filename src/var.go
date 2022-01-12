@@ -27,6 +27,7 @@ var (
 
 	app         = kingpin.New(appName, appDescription)
 	argsForce   = app.Flag("force", "force update request irrespective of the current ip").Short('f').Default("False").Bool()
+	argsIP      = app.Flag("ip", "use specific up to update").Short('i').String()
 	argsLogfile = app.Flag("logfile", "logfile location").Short('l').Default(env.Logfile).String()
 )
 

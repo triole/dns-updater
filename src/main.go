@@ -1,12 +1,22 @@
 package main
 
-import "os"
+import (
+	"os"
+)
 
 func main() {
 	var err error
 	argparse()
 
-	currentIPData := getCurrentIPData()
+	var currentIPData IPData
+
+	if *argsIP != "" {
+		currentIPData.IP = *argsIP
+		*argsForce = true
+	} else {
+		currentIPData = getCurrentIPData()
+	}
+
 	if currentIPData.IP == "" {
 		lg.Log("None of the made requests did return a valid IP address.")
 		os.Exit(1)
