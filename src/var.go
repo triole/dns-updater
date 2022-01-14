@@ -20,9 +20,6 @@ var (
 	lg Logging
 
 	// dns service settings
-	hostname = "***REMOVED***"
-	token    = "***REMOVED***"
-	requrl   = "***REMOVED***"
 
 	app         = kingpin.New(appName, appDescription)
 	argsForce   = app.Flag("force", "force update request irrespective of the current ip").Short('f').Default("False").Bool()

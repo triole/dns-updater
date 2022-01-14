@@ -1,13 +1,23 @@
 package main
 
 import (
+	"embed"
+	_ "embed"
+	"fmt"
 	"os"
 )
 
+//go:embed conf/*
+var fs embed.FS
+
 func main() {
-	var err error
 	argparse()
 
+	v, _ := fs.ReadDir("/")
+	fmt.Printf("%+v\n", v)
+
+	conf := readConf("conf/default.toml")
+	var err error
 	var currentIPData IPData
 
 	if *argsIP != "" {
@@ -27,7 +37,7 @@ func main() {
 				lg.LogInfo("Force update request irrespective of the current ip", nil)
 			}
 			writeIPDataJSON(currentIPData)
-			err = updateDNS(currentIPData.IP)
+			err = updateDNS(conf, currentIPData.IP)
 			if err != nil {
 				os.Exit(1)
 			}

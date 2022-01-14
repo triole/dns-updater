@@ -12,21 +12,21 @@ func basicAuth(username, password string) string {
 	return base64.StdEncoding.EncodeToString([]byte(auth))
 }
 
-func updateDNS(ip string) (err error) {
-	url := strings.Replace(requrl, "[IP]", ip, 1)
+func updateDNS(conf tConf, ip string) (err error) {
+	url := strings.Replace(conf.URL, "[IP]", ip, 1)
 	lg.LogInfo("Updating ip at dns service. Request", url)
-	err = makeUpdateRequest(url)
+	err = makeUpdateRequest(conf)
 	return
 }
 
-func makeUpdateRequest(url string) (err error) {
+func makeUpdateRequest(conf tConf) (err error) {
 	var client http.Client
 	var req *http.Request
 	var response *http.Response
-	req, err = http.NewRequest("GET", url, nil)
+	req, err = http.NewRequest("GET", conf.URL, nil)
 	lg.LogError("Error initializing request", err)
 	if err == nil {
-		req.Header.Add("Authorization", "Basic "+basicAuth(hostname, token))
+		req.Header.Add("Authorization", "Basic "+basicAuth(conf.Hostname, conf.Token))
 		response, err = client.Do(req)
 		lg.LogError("Error during request", err)
 
