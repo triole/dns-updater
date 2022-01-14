@@ -10,10 +10,15 @@ func didIPChange(currentIPData IPData) (b bool) {
 	oldIPData := readIPDataJSON()
 	if currentIPData.IP != oldIPData.IP {
 		b = true
-		lg.Logf("IP changed %q -> %q", oldIPData.IP, currentIPData.IP)
+		lg.LogInfo(
+			"IP changed", map[string]string{
+				"oldIP":     oldIPData.IP,
+				"currentIP": currentIPData.IP,
+			},
+		)
 	} else {
 		t := oldIPData.Time
-		lg.Log("IP stable since " + t.Format("Monday, Jan _2 15:04:05 2006"))
+		lg.LogInfo("IP stable since", t.Format("Monday, Jan _2 15:04:05 2006"))
 	}
 	return
 }
@@ -25,7 +30,7 @@ func getCurrentIPData() (ipd IPData) {
 			Time: time.Now(),
 			IP:   ip,
 		}
-		lg.Logf("Current IP is %q", ipd.IP)
+		lg.LogInfo("Current IP is", ipd.IP)
 	}
 	return
 }

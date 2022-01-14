@@ -7,9 +7,9 @@ import (
 
 func readIPDataJSON() (ipd IPData) {
 	raw, err := ioutil.ReadFile(fileIPDataJSON)
-	lg.LogIfErr("Error reading ip data json: %q", err)
+	lg.LogError("Error reading ip data json", err)
 	err = json.Unmarshal(raw, &ipd)
-	lg.LogIfErr("Can not unmarshal ip data json: %q", err)
+	lg.LogError("Can not unmarshal ip data json", err)
 	return
 }
 
@@ -17,6 +17,6 @@ func writeIPDataJSON(ipd IPData) {
 	var err error
 	JSONstring, _ := json.Marshal(ipd)
 	err = ioutil.WriteFile(fileIPDataJSON, JSONstring, 0644)
-	lg.LogIfErr("Error writing json file: %q", err)
+	lg.LogError("Error writing json file", err)
 
 }

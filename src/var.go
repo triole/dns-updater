@@ -2,7 +2,6 @@ package main
 
 import (
 	"olibs/environment"
-	"olibs/logging"
 	"os"
 
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
@@ -16,9 +15,9 @@ var (
 	appDescription = "Sends update requests containing the current external ip to a dns service."
 	env            = environment.Init(appName, appMainversion, appDescription, BUILDTAGS)
 
-	lg = logging.Init(env.Logfile)
-
 	fileIPDataJSON = "/tmp/dns-updater.json"
+
+	lg Logging
 
 	// dns service settings
 	hostname = "***REMOVED***"
@@ -36,7 +35,7 @@ func argparse() {
 	app.VersionFlag.Short('V')
 	app.HelpFlag.Short('h')
 	kingpin.MustParse(app.Parse(os.Args[1:]))
-	if *argsLogfile != env.Logfile {
-		lg = logging.Init(*argsLogfile)
-	}
+	// if *argsLogfile != env.Logfile {
+	lg = initLogging(*argsLogfile)
+	// }
 }

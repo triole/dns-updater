@@ -14,7 +14,7 @@ func basicAuth(username, password string) string {
 
 func updateDNS(ip string) (err error) {
 	url := strings.Replace(requrl, "[IP]", ip, 1)
-	lg.Logf("Updating ip at dns service. Request %q", url)
+	lg.LogInfo("Updating ip at dns service. Request", url)
 	err = makeUpdateRequest(url)
 	return
 }
@@ -24,23 +24,23 @@ func makeUpdateRequest(url string) (err error) {
 	var req *http.Request
 	var response *http.Response
 	req, err = http.NewRequest("GET", url, nil)
-	lg.LogIfErr("Error initializing request: %q", err)
+	lg.LogError("Error initializing request", err)
 	if err == nil {
 		req.Header.Add("Authorization", "Basic "+basicAuth(hostname, token))
 		response, err = client.Do(req)
-		lg.LogIfErr("Error during request: %q", err)
+		lg.LogError("Error during request", err)
 
 		if response.StatusCode == 200 {
-			lg.Logf("Update success. Response code 200")
+			lg.LogInfo("Update success. Response code 200", nil)
 
 			defer response.Body.Close()
 			bytes, err := ioutil.ReadAll(response.Body)
-			lg.LogIfErr("Can not read body: %q", err)
+			lg.LogError("Can not read body", err)
 
-			lg.Logf("Reponse body: %q", string(bytes))
+			lg.LogError("Reponse body", string(bytes))
 
 		} else {
-			lg.Logf("Update failed. Response code %d", response.StatusCode)
+			lg.LogFatal("Update failed. Response code", response.StatusCode)
 		}
 	}
 	return
