@@ -16,7 +16,11 @@ type Logging struct {
 func initLogging(logFile string) (lg Logging) {
 	timeStampFormat := "2006-01-02 15:04:05.000 MST"
 	lg.Logrus = logrus.New()
-	logrus.SetLevel(logrus.InfoLevel)
+
+	lg.Logrus.SetLevel(logrus.InfoLevel)
+	if CLI.Debug == true {
+		lg.Logrus.SetLevel(logrus.DebugLevel)
+	}
 
 	lg.Logrus.SetFormatter(&logrus.JSONFormatter{
 		FieldMap: logrus.FieldMap{
@@ -34,7 +38,6 @@ func initLogging(logFile string) (lg Logging) {
 	lg.LogIfFileError("open", logFile, err, true)
 	mw := io.MultiWriter(os.Stdout, openLogFile)
 
-	defer openLogFile.Close()
 	logrus.SetOutput(mw)
 	return lg
 }
@@ -95,8 +98,7 @@ func (lg Logging) LogError(msg interface{}, fields interface{}) {
 func (lg Logging) LogStatus(msg string, ipd tIPData, forceUpdate bool) {
 	lg.LogInfo(
 		msg, logrus.Fields{
-			"ip_old":       ipd.Old,
-			"ip_current":   ipd.Current,
+			"ip_data":      ipd,
 			"force_update": forceUpdate,
 		},
 	)
@@ -111,5 +113,17 @@ func (lg Logging) LogIfFileError(msg, filename string, err error, fatal bool) {
 		if fatal == true {
 			os.Exit(1)
 		}
+	}
+}
+
+// LogDebug logs a debug message
+func (lg Logging) LogDebug(msg string, conf tConf) {
+	if conf.Debug == true {
+		conf.Token = "{{.TOKEN}}"
+		conf.Hostname = "{{.HOSTNAME}}"
+		conf.RequestHeaders = map[string]string{"map": "dummy"}
+		lg.Logrus.WithFields(logrus.Fields{
+			"all_data": conf,
+		}).Debug(msg)
 	}
 }

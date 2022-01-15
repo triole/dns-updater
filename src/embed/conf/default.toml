@@ -1,3 +1,6 @@
 hostname = "ao.spdns.eu"
 token    = "vmzo-iwxo-inus"
 url   = "http://update.spdyn.de/nic/update?hostname={{.HOSTNAME}}&myip={{.IP}}"
+
+[request_headers]
+Authorization = "Basic basicAuth({{.HOSTNAME}}, {{.TOKEN}}"

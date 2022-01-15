@@ -23,9 +23,11 @@ func readConf(filename string) (conf tConf) {
 	conf.IPRetrievalURLs = readIPURLs()
 	conf.IPDataJSON = path.Join(os.TempDir(), "dns-updater.json")
 	conf.ForceUpdate = CLI.Force
+	conf.DryRun = CLI.DryRun
 	conf.Debug = CLI.Debug
-	conf.URL = strings.Replace(conf.URL, "{{.HOSTNAME}}", conf.Hostname, 1)
-
+	if conf.Debug == false {
+		conf.URL = strings.Replace(conf.URL, "{{.HOSTNAME}}", conf.Hostname, 1)
+	}
 	return conf
 }
 

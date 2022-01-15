@@ -18,8 +18,8 @@ func main() {
 		listConfigs()
 	} else {
 
-		conf := readConf(CLI.Config)
 		var err error
+		conf := readConf(CLI.Config)
 
 		if CLI.IP != "" {
 			conf.IPData.Current.IP = CLI.IP
@@ -30,29 +30,31 @@ func main() {
 
 		if conf.IPData.Current.IP == "" {
 			lg.LogFatal("ip retrieval failed", nil)
-		} else if conf.Debug == true {
-			lg.LogInfo("debug mode, exit here", logrus.Fields{
-				"err": conf.IPData,
-			},
-			)
 		} else {
 			conf.IPData.Old = readIPDataJSON()
 			conf.IPChanged = conf.IPData.Old.IP != conf.IPData.Current.IP
+			lg.LogDebug("debug output", conf)
 			if conf.IPChanged == true || CLI.Force == true {
-				writeIPDataJSON(conf.IPData.Current)
-				conf.URL = strings.Replace(
-					conf.URL, "{{.IP}}", conf.IPData.Current.IP, 1,
-				)
-				err = updateDNS(conf)
-				lg.LogIfError(
-					err,
-					"update request failed", logrus.Fields{
-						"err": err,
-					},
-				)
+				if conf.DryRun == true {
+					lg.LogStatus(
+						"dry run, skip update request", conf.IPData, conf.ForceUpdate,
+					)
+				} else {
+					writeIPDataJSON(conf.IPData.Current)
+					conf.URL = strings.Replace(
+						conf.URL, "{{.IP}}", conf.IPData.Current.IP, 1,
+					)
+					err = updateDNS(conf)
+					lg.LogIfError(
+						err,
+						"update request failed", logrus.Fields{
+							"err": err,
+						},
+					)
+				}
 			} else {
 				lg.LogStatus(
-					"skip update", conf.IPData, conf.ForceUpdate,
+					"skip update request", conf.IPData, conf.ForceUpdate,
 				)
 			}
 		}
