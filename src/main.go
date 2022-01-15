@@ -13,14 +13,13 @@ var efs embed.FS
 func main() {
 	parseArgs()
 	lg = initLogging(CLI.Logfile)
+	conf := readConf(CLI.Config)
 
 	if CLI.List == true {
 		listConfigs()
+	} else if CLI.Info == true {
+		displayConnectionInformation(conf)
 	} else {
-
-		var err error
-		conf := readConf(CLI.Config)
-
 		if CLI.IP != "" {
 			conf.IPData.Current.IP = CLI.IP
 			CLI.Force = true
@@ -44,7 +43,7 @@ func main() {
 					conf.URL = strings.Replace(
 						conf.URL, "{{.IP}}", conf.IPData.Current.IP, 1,
 					)
-					err = updateDNS(conf)
+					err := updateDNS(conf)
 					lg.LogIfError(
 						err,
 						"update request failed", logrus.Fields{
