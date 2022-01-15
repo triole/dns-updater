@@ -31,6 +31,7 @@ var CLI struct {
 	Force       bool   `help:"force update request irrespective of the current ip" short:f`
 	IP          string `help:"use a specific ip to update" short:i`
 	Logfile     string `help:"file to process, positional required" default:${logfile}`
+	Debug       bool   `help:"debug mode, check own ip but do not send an update request" short:d`
 	VersionFlag bool   `help:"display version" short:V`
 }
 

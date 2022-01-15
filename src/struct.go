@@ -11,6 +11,7 @@ type tConf struct {
 	IPDataJSON      string
 	IPChanged       bool
 	ForceUpdate     bool
+	Debug           bool
 }
 
 type tIPRetrievalURLs struct {

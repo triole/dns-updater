@@ -30,14 +30,15 @@ func main() {
 
 		if conf.IPData.Current.IP == "" {
 			lg.LogFatal("ip retrieval failed", nil)
+		} else if conf.Debug == true {
+			lg.LogInfo("debug mode, exit here", logrus.Fields{
+				"err": conf.IPData,
+			},
+			)
 		} else {
 			conf.IPData.Old = readIPDataJSON()
 			conf.IPChanged = conf.IPData.Old.IP != conf.IPData.Current.IP
 			if conf.IPChanged == true || CLI.Force == true {
-				// lg.LogStatus(
-				// 	"do update", conf.IPData, conf.ForceUpdate,
-				// )
-
 				writeIPDataJSON(conf.IPData.Current)
 				conf.URL = strings.Replace(
 					conf.URL, "{{.IP}}", conf.IPData.Current.IP, 1,

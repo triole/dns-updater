@@ -20,15 +20,16 @@ func readConf(filename string) (conf tConf) {
 	err = toml.Unmarshal(data, &conf)
 	lg.LogIfFileError("unmarshal", filename, err, true)
 
-	conf.IPRetrievalURLs = readIpURLs()
+	conf.IPRetrievalURLs = readIPURLs()
 	conf.IPDataJSON = path.Join(os.TempDir(), "dns-updater.json")
 	conf.ForceUpdate = CLI.Force
+	conf.Debug = CLI.Debug
 	conf.URL = strings.Replace(conf.URL, "{{.HOSTNAME}}", conf.Hostname, 1)
 
 	return conf
 }
 
-func readIpURLs() []string {
+func readIPURLs() []string {
 	var ipru tIPRetrievalURLs
 	filename := "embed/ip_retrieval_urls.toml"
 	data, err := efs.ReadFile(filename)
