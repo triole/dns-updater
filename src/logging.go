@@ -18,29 +18,19 @@ func initLogging(logFile string) (lg Logging) {
 	timeStampFormat := "2006-01-02 15:04:05.000 MST"
 	lg.Logrus = logrus.New()
 
-	lg.Logrus.SetFormatter(&logrus.TextFormatter{
-		FullTimestamp:   true,
+	lg.Logrus.SetFormatter(&logrus.JSONFormatter{
+		FieldMap: logrus.FieldMap{
+			logrus.FieldKeyTime:  "date",
+			logrus.FieldKeyLevel: "level",
+			logrus.FieldKeyMsg:   "msg",
+		},
 		TimestampFormat: timeStampFormat,
-		DisableQuote:    true,
-		PadLevelText:    true,
 	})
 
 	openLogFile, err := os.OpenFile(
 		logFile, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644,
 	)
-	if err != nil {
-		lg.LogFatal(
-			"Can not open log file",
-			logrus.Fields{
-				"logfile": logFile,
-				"error":   err.Error(),
-			},
-		)
-	}
-
-	if logFile != "/dev/stdout" {
-		lg.LogToFile = true
-	}
+	lg.LogIfFileError("can not open log file", logFile, err, true)
 
 	mw := io.MultiWriter(os.Stdout, openLogFile)
 	logrus.SetOutput(mw)
@@ -77,6 +67,12 @@ func (lg Logging) LogFatal(msg string, fields interface{}) {
 	}
 }
 
+func (lg Logging) LogIfError(err error, msg interface{}, fields interface{}) {
+	if err != nil {
+		lg.LogError(msg, fields)
+	}
+}
+
 // LogError logs an error message
 func (lg Logging) LogError(msg interface{}, fields interface{}) {
 	var msgStr string
@@ -91,5 +87,27 @@ func (lg Logging) LogError(msg interface{}, fields interface{}) {
 		lg.Logrus.WithFields(val).Error(msgStr)
 	default:
 		lg.Logrus.Error(msgStr)
+	}
+}
+
+func (lg Logging) LogStatus(msg string, ipd tIPData, forceUpdate bool) {
+	lg.LogInfo(
+		msg, logrus.Fields{
+			"ip_old":       ipd.Old,
+			"ip_current":   ipd.Current,
+			"force_update": forceUpdate,
+		},
+	)
+}
+
+func (lg Logging) LogIfFileError(msg, filename string, err error, fatal bool) {
+	if err != nil {
+		lg.LogError(msg+"file error", logrus.Fields{
+			"err":      err.Error(),
+			"filename": filename,
+		})
+		if fatal == true {
+			os.Exit(1)
+		}
 	}
 }

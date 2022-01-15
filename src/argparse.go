@@ -37,7 +37,7 @@ var CLI struct {
 func parseArgs() {
 	user, err := user.Current()
 	if err != nil {
-		lg.LogFatal("Unable to detect user", logrus.Fields{
+		lg.LogFatal("unable to detect user", logrus.Fields{
 			"err": err,
 		})
 	}

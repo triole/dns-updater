@@ -2,7 +2,9 @@ package main
 
 import (
 	"embed"
-	"os"
+	"strings"
+
+	"github.com/sirupsen/logrus"
 )
 
 //go:embed embed/**
@@ -27,19 +29,30 @@ func main() {
 		}
 
 		if conf.IPData.Current.IP == "" {
-			lg.LogError("None of the made requests did return a valid IP address.", nil)
-			os.Exit(1)
+			lg.LogFatal("ip retrieval failed", nil)
 		} else {
-			b := didIPChange(conf.IPData.Current)
-			if b == true || CLI.Force == true {
-				if CLI.Force == true {
-					lg.LogInfo("Force update request irrespective of the current ip", nil)
-				}
+			conf.IPData.Old = readIPDataJSON()
+			conf.IPChanged = conf.IPData.Old.IP != conf.IPData.Current.IP
+			if conf.IPChanged == true || CLI.Force == true {
+				// lg.LogStatus(
+				// 	"do update", conf.IPData, conf.ForceUpdate,
+				// )
+
 				writeIPDataJSON(conf.IPData.Current)
-				err = updateDNS(conf, conf.IPData.Current.IP)
-				if err != nil {
-					os.Exit(1)
-				}
+				conf.URL = strings.Replace(
+					conf.URL, "{{.IP}}", conf.IPData.Current.IP, 1,
+				)
+				err = updateDNS(conf)
+				lg.LogIfError(
+					err,
+					"update request failed", logrus.Fields{
+						"err": err,
+					},
+				)
+			} else {
+				lg.LogStatus(
+					"skip update", conf.IPData, conf.ForceUpdate,
+				)
 			}
 		}
 	}

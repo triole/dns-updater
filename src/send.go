@@ -4,7 +4,8 @@ import (
 	"encoding/base64"
 	"io/ioutil"
 	"net/http"
-	"strings"
+
+	"github.com/sirupsen/logrus"
 )
 
 func basicAuth(username, password string) string {
@@ -12,9 +13,10 @@ func basicAuth(username, password string) string {
 	return base64.StdEncoding.EncodeToString([]byte(auth))
 }
 
-func updateDNS(conf tConf, ip string) (err error) {
-	url := strings.Replace(conf.URL, "[IP]", ip, 1)
-	lg.LogInfo("Updating ip at dns service. Request", url)
+func updateDNS(conf tConf) (err error) {
+	lg.LogInfo("fire update request", logrus.Fields{
+		"url": conf.URL,
+	})
 	err = makeUpdateRequest(conf)
 	return
 }
@@ -24,23 +26,38 @@ func makeUpdateRequest(conf tConf) (err error) {
 	var req *http.Request
 	var response *http.Response
 	req, err = http.NewRequest("GET", conf.URL, nil)
-	lg.LogError("Error initializing request", err)
+
+	lg.LogIfError(err, "error initializing request", logrus.Fields{
+		"err": err,
+	})
 	if err == nil {
 		req.Header.Add("Authorization", "Basic "+basicAuth(conf.Hostname, conf.Token))
 		response, err = client.Do(req)
-		lg.LogError("Error during request", err)
+		lg.LogIfError(
+			err, "error during request", logrus.Fields{
+				"err": err,
+			})
 
 		if response.StatusCode == 200 {
-			lg.LogInfo("Update success. Response code 200", nil)
+			lg.LogInfo("request success", logrus.Fields{
+				"status_code": response.StatusCode,
+			})
 
 			defer response.Body.Close()
 			bytes, err := ioutil.ReadAll(response.Body)
-			lg.LogError("Can not read body", err)
+			lg.LogIfError(
+				err, "can not read body", logrus.Fields{
+					"err": err,
+				})
 
-			lg.LogError("Reponse body", string(bytes))
+			lg.LogInfo("got response", logrus.Fields{
+				"body": string(bytes),
+			})
 
 		} else {
-			lg.LogFatal("Update failed. Response code", response.StatusCode)
+			lg.LogFatal("update request failed", logrus.Fields{
+				"status_code": response.StatusCode,
+			})
 		}
 	}
 	return

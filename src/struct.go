@@ -8,6 +8,9 @@ type tConf struct {
 	URL             string `toml:"url"`
 	IPRetrievalURLs []string
 	IPData          tIPData
+	IPDataJSON      string
+	IPChanged       bool
+	ForceUpdate     bool
 }
 
 type tIPRetrievalURLs struct {
@@ -15,10 +18,11 @@ type tIPRetrievalURLs struct {
 }
 
 type tIPData struct {
-	Current tIPDataSet
+	Current tIPDataSet `json:"current"`
+	Old     tIPDataSet `json:"old"`
 }
 
 type tIPDataSet struct {
-	Time time.Time
-	IP   string
+	Time time.Time `json:"time"`
+	IP   string    `json:"ip"`
 }
