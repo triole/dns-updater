@@ -2,21 +2,17 @@ package main
 
 import (
 	"embed"
-	_ "embed"
-	"fmt"
 	"os"
 )
 
-//go:embed conf/*
-var fs embed.FS
+//go:embed embed/**
+var efs embed.FS
 
 func main() {
 	parseArgs()
+	lg = initLogging(CLI.Logfile)
 
-	v, _ := fs.ReadDir("/")
-	fmt.Printf("%+v\n", v)
-
-	conf := readConf("conf/default.toml")
+	conf := readConf(CLI.Config)
 	var err error
 	var currentIPData IPData
 

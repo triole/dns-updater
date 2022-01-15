@@ -1,3 +1,5 @@
-conf/
 build/
 tmp/
+
+conf/*
+!conf/ip_retrieval_urls.toml
