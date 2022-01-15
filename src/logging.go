@@ -9,14 +9,14 @@ import (
 
 // Logging holds the logging module
 type Logging struct {
-	Logrus    *logrus.Logger
-	LogToFile bool
+	Logrus *logrus.Logger
 }
 
 // Init method, does what it says
 func initLogging(logFile string) (lg Logging) {
 	timeStampFormat := "2006-01-02 15:04:05.000 MST"
 	lg.Logrus = logrus.New()
+	logrus.SetLevel(logrus.InfoLevel)
 
 	lg.Logrus.SetFormatter(&logrus.JSONFormatter{
 		FieldMap: logrus.FieldMap{
@@ -32,8 +32,9 @@ func initLogging(logFile string) (lg Logging) {
 		logFile, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644,
 	)
 	lg.LogIfFileError("open", logFile, err, true)
-
 	mw := io.MultiWriter(os.Stdout, openLogFile)
+
+	defer openLogFile.Close()
 	logrus.SetOutput(mw)
 	return lg
 }
