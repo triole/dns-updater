@@ -14,10 +14,13 @@ type tConf struct {
 	ForceUpdate     bool
 	DryRun          bool
 	Debug           bool
+	RetrievalConf   tRetrievalConf
 }
 
-type tIPRetrievalURLs struct {
-	URLs []string `toml:"urls"`
+type tRetrievalConf struct {
+	URLs     []string `toml:"urls"`
+	MoreInfo []string `toml:"more_info"`
+	TorCheck string   `toml:"torcheck"`
 }
 
 type tIPData struct {

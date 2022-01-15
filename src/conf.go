@@ -20,7 +20,7 @@ func readConf(filename string) (conf tConf) {
 	err = toml.Unmarshal(data, &conf)
 	lg.LogIfFileError("unmarshal", filename, err, true)
 
-	conf.IPRetrievalURLs = readIPURLs()
+	conf.RetrievalConf = readRetrievalConf()
 	conf.IPDataJSON = path.Join(os.TempDir(), "dns-updater.json")
 	conf.ForceUpdate = CLI.Force
 	conf.DryRun = CLI.DryRun
@@ -31,15 +31,15 @@ func readConf(filename string) (conf tConf) {
 	return conf
 }
 
-func readIPURLs() []string {
-	var ipru tIPRetrievalURLs
-	filename := "embed/ip_retrieval_urls.toml"
+func readRetrievalConf() tRetrievalConf {
+	var ipru tRetrievalConf
+	filename := "embed/retrieval_conf.toml"
 	data, err := efs.ReadFile(filename)
 	lg.LogIfFileError("read embedded", filename, err, true)
 
 	err = toml.Unmarshal(data, &ipru)
 	lg.LogIfFileError("unmarshal embedded", filename, err, true)
-	return ipru.URLs
+	return ipru
 }
 
 func listConfigs() {

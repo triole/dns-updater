@@ -8,3 +8,6 @@ urls = [
     "https://wtfismyip.com/text",
     "https://jsonip.com"
 ]
+
+more_info = ["http://ip-api.com/line"]
+torcheck = "https://check.torproject.org/?lang=en_EN'"
