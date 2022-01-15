@@ -15,10 +15,10 @@ func readConf(filename string) (conf tConf) {
 	}
 	filename = path.Join("embed/conf", filename)
 	data, err := efs.ReadFile(filename)
-	lg.LogIfFileError("can not read config", filename, err, true)
+	lg.LogIfFileError("read", filename, err, true)
 
 	err = toml.Unmarshal(data, &conf)
-	lg.LogIfFileError("can not unmarshal config", filename, err, true)
+	lg.LogIfFileError("unmarshal", filename, err, true)
 
 	conf.IPRetrievalURLs = readIpURLs()
 	conf.IPDataJSON = path.Join(os.TempDir(), "dns-updater.json")
@@ -32,10 +32,10 @@ func readIpURLs() []string {
 	var ipru tIPRetrievalURLs
 	filename := "embed/ip_retrieval_urls.toml"
 	data, err := efs.ReadFile(filename)
-	lg.LogIfFileError("can not read embedded file", filename, err, true)
+	lg.LogIfFileError("read embedded", filename, err, true)
 
 	err = toml.Unmarshal(data, &ipru)
-	lg.LogIfFileError("can not unmarshal embedded file", filename, err, true)
+	lg.LogIfFileError("unmarshal embedded", filename, err, true)
 	return ipru.URLs
 }
 

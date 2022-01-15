@@ -27,10 +27,11 @@ func initLogging(logFile string) (lg Logging) {
 		TimestampFormat: timeStampFormat,
 	})
 
+	logrus.SetOutput(os.Stdout)
 	openLogFile, err := os.OpenFile(
 		logFile, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644,
 	)
-	lg.LogIfFileError("can not open log file", logFile, err, true)
+	lg.LogIfFileError("open", logFile, err, true)
 
 	mw := io.MultiWriter(os.Stdout, openLogFile)
 	logrus.SetOutput(mw)
@@ -102,7 +103,7 @@ func (lg Logging) LogStatus(msg string, ipd tIPData, forceUpdate bool) {
 
 func (lg Logging) LogIfFileError(msg, filename string, err error, fatal bool) {
 	if err != nil {
-		lg.LogError(msg+"file error", logrus.Fields{
+		lg.LogError(msg+" file error", logrus.Fields{
 			"err":      err.Error(),
 			"filename": filename,
 		})
