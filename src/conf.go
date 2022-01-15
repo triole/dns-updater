@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"path"
 	"strings"
 
 	"github.com/pelletier/go-toml"
@@ -12,10 +13,18 @@ type tConf struct {
 	Hostname        string `toml:hostname`
 	Token           string `toml:token`
 	URL             string `toml:url`
-	IpRetrievalURLs []string
+	IPRetrievalURLs []string
+}
+
+type tIpRetURLs struct {
+	URLs []string `toml:urls`
 }
 
 func readConf(filename string) (conf tConf) {
+	if strings.HasSuffix(filename, ".toml") == false {
+		filename = filename + ".toml"
+	}
+	filename = path.Join("embed/conf", filename)
 	data, err := efs.ReadFile(filename)
 	if err != nil {
 		lg.LogFatal("Can not read config", logrus.Fields{
@@ -23,7 +32,7 @@ func readConf(filename string) (conf tConf) {
 			"filename": filename,
 		})
 	}
-	if err := toml.Unmarshal(data, conf); err != nil {
+	if err := toml.Unmarshal(data, &conf); err != nil {
 		if err != nil {
 			lg.LogFatal("Can not unmarshal config", logrus.Fields{
 				"filename": filename,
@@ -31,23 +40,29 @@ func readConf(filename string) (conf tConf) {
 			})
 		}
 	}
-	conf.IpRetrievalURLs = readIpURLs("ip_retrieval_urls.toml")
+	conf.IPRetrievalURLs = readIpURLs()
 	return conf
 }
 
-func readIpURLs(filename string) (urls []string) {
-	data, err := efs.ReadFile("embed/ip_retrieval_urls.toml")
-	lg.LogFatal("Can not read ip retrieval urls", logrus.Fields{
-		"err":      err.Error(),
-		"filename": filename,
-	})
-	if err := toml.Unmarshal(data, urls); err != nil {
-		lg.LogFatal("Can not unmarshal ip retrieval urls", logrus.Fields{
-			"err":      err,
+func readIpURLs() []string {
+	var ipru tIpRetURLs
+	filename := "embed/ip_retrieval_urls.toml"
+	data, err := efs.ReadFile(filename)
+	if err != nil {
+		lg.LogFatal("Can not read ip retrieval urls", logrus.Fields{
+			"err":      err.Error(),
 			"filename": filename,
 		})
 	}
-	return urls
+	if err := toml.Unmarshal(data, &ipru); err != nil {
+		if err != nil {
+			lg.LogFatal("Can not unmarshal ip retrieval urls", logrus.Fields{
+				"err":      err,
+				"filename": filename,
+			})
+		}
+	}
+	return ipru.URLs
 }
 
 func listConfigs() {

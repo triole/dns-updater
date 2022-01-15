@@ -27,7 +27,7 @@ func didIPChange(currentIPData IPData) (b bool) {
 }
 
 func getCurrentIPData(conf tConf) (ipd IPData) {
-	ip, err := getMyIP(conf.IpRetrievalURLs)
+	ip, err := getMyIP(conf.IPRetrievalURLs)
 	if err == nil {
 		ipd = IPData{
 			Time: time.Now(),
