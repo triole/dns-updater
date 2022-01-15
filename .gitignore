@@ -1,5 +1,5 @@
 build/
 tmp/
 
-conf/*
-!conf/ip_retrieval_urls.toml
+src/embed/conf/*
+!src/embed/conf/dummy.toml
