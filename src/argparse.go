@@ -18,7 +18,7 @@ var (
 	BUILDTAGS      string
 	appName        = "dns-updater"
 	appMainversion = "0"
-	appDescription = "Sends update requests containing the current external ip to a dns service."
+	appDescription = "Send update requests containing the current external ip to a dns service"
 
 	fileIPDataJSON = "/tmp/dns-updater.json"
 
@@ -26,10 +26,11 @@ var (
 )
 
 var CLI struct {
-	Config      string `help:"config file to use"  short:c default:default`
-	Force       bool   `help:"force update request irrespective of the current ip"  short:f`
-	IP          string `help:"use a specific ip to update"  short:i`
-	Logfile     string `help:"file to process, positional  required"  default:${logfile}`
+	Config      string `help:"config file to use" short:c default:default`
+	List        bool   `help:"list embedded configs" short:l`
+	Force       bool   `help:"force update request irrespective of the current ip" short:f`
+	IP          string `help:"use a specific ip to update" short:i`
+	Logfile     string `help:"file to process, positional required" default:${logfile}`
 	VersionFlag bool   `help:"display version" short:V`
 }
 
@@ -52,7 +53,7 @@ func parseArgs() {
 			FlagsLast:    false,
 		}),
 		kong.Vars{
-			"logfile": path.Join(homeDir, ".var", "log", appName+".toml"),
+			"logfile": path.Join(homeDir, ".var", "log", appName+".log"),
 		},
 	)
 	_ = ctx.Run()
