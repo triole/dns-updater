@@ -2,8 +2,23 @@ package main
 
 import "time"
 
-// IPData contains the information that the IP fetch returned
-type IPData struct {
+type tConf struct {
+	Hostname        string `toml:"hostname"`
+	Token           string `toml:"token"`
+	URL             string `toml:"url"`
+	IPRetrievalURLs []string
+	IPData          tIPData
+}
+
+type tIPRetrievalURLs struct {
+	URLs []string `toml:"urls"`
+}
+
+type tIPData struct {
+	Current tIPDataSet
+}
+
+type tIPDataSet struct {
 	Time time.Time
 	IP   string
 }

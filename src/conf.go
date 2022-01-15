@@ -9,17 +9,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type tConf struct {
-	Hostname        string `toml:hostname`
-	Token           string `toml:token`
-	URL             string `toml:url`
-	IPRetrievalURLs []string
-}
-
-type tIpRetURLs struct {
-	URLs []string `toml:urls`
-}
-
 func readConf(filename string) (conf tConf) {
 	if strings.HasSuffix(filename, ".toml") == false {
 		filename = filename + ".toml"
@@ -45,7 +34,7 @@ func readConf(filename string) (conf tConf) {
 }
 
 func readIpURLs() []string {
-	var ipru tIpRetURLs
+	var ipru tIPRetrievalURLs
 	filename := "embed/ip_retrieval_urls.toml"
 	data, err := efs.ReadFile(filename)
 	if err != nil {
