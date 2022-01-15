@@ -11,7 +11,7 @@ import (
 var fs embed.FS
 
 func main() {
-	argparse()
+	parseArgs()
 
 	v, _ := fs.ReadDir("/")
 	fmt.Printf("%+v\n", v)
@@ -20,11 +20,13 @@ func main() {
 	var err error
 	var currentIPData IPData
 
-	if *argsIP != "" {
-		currentIPData.IP = *argsIP
-		*argsForce = true
+	os.Exit(0)
+
+	if CLI.IP != "" {
+		currentIPData.IP = CLI.IP
+		CLI.Force = true
 	} else {
-		currentIPData = getCurrentIPData()
+		currentIPData = getCurrentIPData(conf)
 	}
 
 	if currentIPData.IP == "" {
@@ -32,8 +34,8 @@ func main() {
 		os.Exit(1)
 	} else {
 		b := didIPChange(currentIPData)
-		if b == true || *argsForce == true {
-			if *argsForce == true {
+		if b == true || CLI.Force == true {
+			if CLI.Force == true {
 				lg.LogInfo("Force update request irrespective of the current ip", nil)
 			}
 			writeIPDataJSON(currentIPData)
