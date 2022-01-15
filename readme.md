@@ -1,8 +1,14 @@
 # DNS-Updater
 
+<!--- mdtoc: toc begin -->
 
+1. [Synopsis](#synopsis)
+2. [Config](#config)<!--- mdtoc: toc end -->
 
-## Docs
-[Overview](https://wiki.securepoint.de/index.php/SPDyn)
+## Synopsis
 
-[Variables and Authentication Method](https://wiki.securepoint.de/SPDyn/Variablen)
+A simple dns update tool that is used to regularly retrieve the current ip and send an update request to a dynamic dns provider. Currently only supports [spdns](https://www.spdyn.de).
+
+## Config
+
+Configuration files are embedded on build for the ease of shipping. Examples are to be found in the `conf` folder.
