@@ -31,14 +31,14 @@ func initLogging(logFile string) (lg Logging) {
 		TimestampFormat: timeStampFormat,
 	})
 
-	logrus.SetOutput(os.Stdout)
+	lg.Logrus.SetOutput(os.Stdout)
 	openLogFile, err := os.OpenFile(
 		logFile, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644,
 	)
 	lg.LogIfFileError("open", logFile, err, true)
 	mw := io.MultiWriter(os.Stdout, openLogFile)
 
-	logrus.SetOutput(mw)
+	lg.Logrus.SetOutput(mw)
 	return lg
 }
 
