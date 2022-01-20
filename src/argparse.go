@@ -17,8 +17,8 @@ var (
 	// BUILDTAGS are the ld flags that get injected during the build process
 	BUILDTAGS      string
 	appName        = "dns-updater"
-	appMainversion = "0"
 	appDescription = "Send update requests containing the current external ip to a dns service"
+	appMainversion = "0.1"
 
 	fileIPDataJSON = "/tmp/dns-updater.json"
 
