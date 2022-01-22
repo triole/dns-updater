@@ -10,8 +10,9 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func getCurrentIPData(conf tConf) (ipd tIPDataSet) {
-	ip, err := getMyIP(conf.RetrievalConf.URLs)
+func getCurrentIPData(conf tConf) (ipd tIPDataSet, err error) {
+	var ip string
+	ip, err = getMyIP(conf.RetrievalConf.URLs)
 	if err == nil {
 		ipd = tIPDataSet{
 			Time: time.Now(),
@@ -63,7 +64,7 @@ func makeIPRequest(url string, ch chan<- string) {
 	ch <- ip
 }
 
-func makeSimpleRequest(url string) string {
+func makeSimpleRequest(url string) (string, error) {
 	var bytes []byte
 	timeout := time.Duration(5 * time.Second)
 	client := http.Client{
@@ -77,21 +78,28 @@ func makeSimpleRequest(url string) string {
 			"url": url,
 		})
 	}
-	return string(bytes)
+	return string(bytes), err
 }
 
 func displayConnectionInformation(conf tConf) {
-	ipd := getCurrentIPData(conf)
-	fmt.Printf("\nReponse time: %s\n", ipd.Time)
-	fmt.Printf("External ip:  %s\n", ipd.IP)
+	ipd, err := getCurrentIPData(conf)
+	if err == nil {
+		fmt.Printf("\nReponse time: %s\n", ipd.Time)
+		fmt.Printf("External ip:  %s\n", ipd.IP)
+	}
 
-	body := makeSimpleRequest(conf.RetrievalConf.TorCheck)
-	torEnabled := rxFind("You are not using Tor", body) == ""
-	fmt.Printf("Tor enabled:  %v\n", torEnabled)
+	body, err := makeSimpleRequest(conf.RetrievalConf.TorCheck)
+	if err == nil {
+		torEnabled := rxFind("You are not using Tor", body) == ""
+		fmt.Printf("Tor enabled:  %v\n", torEnabled)
+	}
 
 	for _, url := range conf.RetrievalConf.MoreInfo {
-		fmt.Printf("\n%s...\n", url)
-		fmt.Printf("%s\n", makeSimpleRequest(url))
+		body, err := makeSimpleRequest(url)
+		if err == nil {
+			fmt.Printf("\n%s...\n", url)
+			fmt.Printf("%s\n", body)
+		}
 	}
 
 	fmt.Printf("")

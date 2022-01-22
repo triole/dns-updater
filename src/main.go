@@ -24,7 +24,7 @@ func main() {
 			conf.IPData.Current.IP = CLI.IP
 			CLI.Force = true
 		} else {
-			conf.IPData.Current = getCurrentIPData(conf)
+			conf.IPData.Current, _ = getCurrentIPData(conf)
 		}
 
 		if conf.IPData.Current.IP == "" {
