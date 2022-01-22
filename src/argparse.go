@@ -28,10 +28,10 @@ var (
 var CLI struct {
 	Info        bool   `help:"just display connection information, no dyndns update at all" short:j`
 	Config      string `help:"config file to use" short:c default:default`
-	List        bool   `help:"list embedded configs" short:l`
+	List        bool   `help:"list embedded configs" short:g`
 	Force       bool   `help:"force update request irrespective of the current ip" short:f`
 	IP          string `help:"use a specific ip to update" short:i`
-	Logfile     string `help:"file to process, positional required" default:${logfile}`
+	Logfile     string `help:"file to process, positional required" default:${logfile} short:l`
 	Debug       bool   `help:"enable debug output" short:d`
 	DryRun      bool   `help:"do not send update request" short:n`
 	VersionFlag bool   `help:"display version" short:V`
