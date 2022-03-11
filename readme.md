@@ -1,4 +1,4 @@
-# DNS-Updater
+# DNS-Updater ![build](https://github.com/triole/dns-updater/actions/workflows/build.yaml/badge.svg)
 
 <!--- mdtoc: toc begin -->
 
@@ -25,10 +25,10 @@ Flags:
   -j, --info                just display connection information, no dyndns
                             update at all
   -c, --config="default"    config file to use
-  -l, --list                list embedded configs
+  -g, --list                list embedded configs
   -f, --force               force update request irrespective of the current ip
   -i, --ip=STRING           use a specific ip to update
-      --logfile="/home/ole/.var/log/dns-updater.log"
+  -l, --logfile="/home/ole/.var/log/dns-updater.log"
                             file to process, positional required
   -d, --debug               enable debug output
   -n, --dry-run             do not send update request
