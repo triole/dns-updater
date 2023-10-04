@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"os"
 )
 
@@ -13,7 +12,7 @@ func readIPDataJSON() (ipd tIPDataSet) {
 			"ip date json does not exist. consider ip as changed", nil,
 		)
 	} else {
-		raw, err := ioutil.ReadFile(fileIPDataJSON)
+		raw, err := os.ReadFile(fileIPDataJSON)
 		lg.LogIfFileError("read", fileIPDataJSON, err, false)
 
 		err = json.Unmarshal(raw, &ipd)
@@ -25,6 +24,6 @@ func readIPDataJSON() (ipd tIPDataSet) {
 func writeIPDataJSON(ipd tIPDataSet) {
 	var err error
 	JSONstring, _ := json.Marshal(ipd)
-	err = ioutil.WriteFile(fileIPDataJSON, JSONstring, 0644)
+	err = os.WriteFile(fileIPDataJSON, JSONstring, 0644)
 	lg.LogIfFileError("write", fileIPDataJSON, err, false)
 }

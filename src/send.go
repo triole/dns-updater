@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/base64"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/sirupsen/logrus"
@@ -44,7 +44,7 @@ func makeUpdateRequest(conf tConf) (err error) {
 			})
 
 			defer response.Body.Close()
-			bytes, err := ioutil.ReadAll(response.Body)
+			bytes, err := io.ReadAll(response.Body)
 			lg.LogIfError(
 				err, "can not read body", logrus.Fields{
 					"err": err,

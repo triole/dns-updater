@@ -3,7 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"time"
 
@@ -54,7 +54,7 @@ func makeIPRequest(url string, ch chan<- string) {
 	}
 	resp, err := client.Get(url)
 	if err == nil {
-		body, _ := ioutil.ReadAll(resp.Body)
+		body, _ := io.ReadAll(resp.Body)
 		ip = rxFindIP(string(body))
 	} else {
 		lg.LogError("request failed", logrus.Fields{
@@ -72,7 +72,7 @@ func makeSimpleRequest(url string) (string, error) {
 	}
 	resp, err := client.Get(url)
 	if err == nil {
-		bytes, _ = ioutil.ReadAll(resp.Body)
+		bytes, _ = io.ReadAll(resp.Body)
 	} else {
 		lg.LogError("request failed", logrus.Fields{
 			"url": url,
