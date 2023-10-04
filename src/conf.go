@@ -10,7 +10,7 @@ import (
 )
 
 func readConf(filename string) (conf tConf) {
-	if strings.HasSuffix(filename, ".toml") == false {
+	if !strings.HasSuffix(filename, ".toml") {
 		filename = filename + ".toml"
 	}
 	filename = path.Join("embed/conf", filename)
@@ -25,7 +25,7 @@ func readConf(filename string) (conf tConf) {
 	conf.ForceUpdate = CLI.Force
 	conf.DryRun = CLI.DryRun
 	conf.Debug = CLI.Debug
-	if conf.Debug == false {
+	if !conf.Debug {
 		conf.URL = strings.Replace(conf.URL, "{{.HOSTNAME}}", conf.Hostname, 1)
 	}
 	return conf

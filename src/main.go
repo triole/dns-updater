@@ -15,9 +15,9 @@ func main() {
 	lg = initLogging(CLI.Logfile)
 	conf := readConf(CLI.Config)
 
-	if CLI.List == true {
+	if CLI.List {
 		listConfigs()
-	} else if CLI.Info == true {
+	} else if CLI.Info {
 		displayConnectionInformation(conf)
 	} else {
 		if CLI.IP != "" {
@@ -33,8 +33,8 @@ func main() {
 			conf.IPData.Old = readIPDataJSON()
 			conf.IPChanged = conf.IPData.Old.IP != conf.IPData.Current.IP
 			lg.LogDebug("debug output", conf)
-			if conf.IPChanged == true || CLI.Force == true {
-				if conf.DryRun == true {
+			if conf.IPChanged || CLI.Force {
+				if conf.DryRun {
 					lg.LogStatus(
 						"dry run, skip update request", conf.IPData, conf.ForceUpdate,
 					)

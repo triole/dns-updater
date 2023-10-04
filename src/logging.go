@@ -18,7 +18,7 @@ func initLogging(logFile string) (lg Logging) {
 	lg.Logrus = logrus.New()
 
 	lg.Logrus.SetLevel(logrus.InfoLevel)
-	if CLI.Debug == true {
+	if CLI.Debug {
 		lg.Logrus.SetLevel(logrus.DebugLevel)
 	}
 
@@ -110,7 +110,7 @@ func (lg Logging) LogIfFileError(msg, filename string, err error, fatal bool) {
 			"err":      err.Error(),
 			"filename": filename,
 		})
-		if fatal == true {
+		if fatal {
 			os.Exit(1)
 		}
 	}
@@ -118,7 +118,7 @@ func (lg Logging) LogIfFileError(msg, filename string, err error, fatal bool) {
 
 // LogDebug logs a debug message
 func (lg Logging) LogDebug(msg string, conf tConf) {
-	if conf.Debug == true {
+	if conf.Debug {
 		conf.Token = "{{.TOKEN}}"
 		conf.Hostname = "{{.HOSTNAME}}"
 		conf.RequestHeaders = map[string]string{"map": "dummy"}

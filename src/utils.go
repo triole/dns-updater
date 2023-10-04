@@ -1,8 +1,6 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
 	"regexp"
 )
 
@@ -18,9 +16,4 @@ func rxFind(rx string, content string) (r string) {
 	temp, _ := regexp.Compile(rx)
 	r = temp.FindString(content)
 	return
-}
-
-func pprint(i interface{}) {
-	s, _ := json.MarshalIndent(i, "", "\t")
-	fmt.Println(string(s))
 }
