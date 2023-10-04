@@ -1,3 +1,3 @@
 hostname = "hostname"
-token    = "very_secret_token"
-url   = "dns_service_url"
+token = "very_secret_token"
+url = "dns_service_url"
