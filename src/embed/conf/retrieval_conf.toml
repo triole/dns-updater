@@ -1,0 +1,13 @@
+urls = [
+  "https://api.ip.sb/ip",
+  "http://icanhazip.com",
+  "https://ident.me",
+  "http://ipecho.net/plain",
+  "http://plain-text-ip.com",
+  "https://api.ipify.org?format=text",
+  "https://wtfismyip.com/text",
+  "https://jsonip.com",
+]
+
+more_info = ["http://ip-api.com/line"]
+torcheck = "https://check.torproject.org/?lang=en_EN'"

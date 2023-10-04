@@ -1,5 +1,4 @@
 build/
 tmp/
 
-src/embed/conf/*
-!src/embed/conf/dummy.toml
+default.toml
