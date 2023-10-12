@@ -47,7 +47,8 @@ func main() {
 					lg.LogIfError(
 						err,
 						"update request failed", logrus.Fields{
-							"err": err,
+							"current_ip": conf.IPData.Current.IP,
+							"err":        err,
 						},
 					)
 				}
