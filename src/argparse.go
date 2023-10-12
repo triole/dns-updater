@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/user"
 	"path"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -19,15 +20,13 @@ var (
 	appName        = "dns-updater"
 	appDescription = "Send update requests containing the current external ip to a dns service"
 	appMainversion = "0.1"
-
 	fileIPDataJSON = "/tmp/dns-updater.json"
-
-	lg Logging
+	lg             Logging
 )
 
 var CLI struct {
 	Info        bool   `help:"just display connection information, no dyndns update at all" short:"j"`
-	Config      string `help:"config file to use" default:"default" short:"c"`
+	Config      string `help:"config file to use" default:"${config}" short:"c"`
 	List        bool   `help:"list embedded configs" short:"g"`
 	Force       bool   `help:"force update request irrespective of the current ip" short:"f"`
 	IP          string `help:"use a specific ip to update" short:"i"`
@@ -39,6 +38,7 @@ var CLI struct {
 
 func parseArgs() {
 	user, err := user.Current()
+	homeFolder := getHome()
 	if err != nil {
 		lg.LogFatal("unable to detect user", logrus.Fields{
 			"err": err,
@@ -57,6 +57,15 @@ func parseArgs() {
 		}),
 		kong.Vars{
 			"logfile": path.Join(homeDir, ".var", "log", appName+".log"),
+			"config": returnFirstExistingFile(
+				[]string{
+					path.Join(getBindir(), appName+".toml"),
+					path.Join(homeFolder, ".conf", appName, "conf.yaml"),
+					path.Join(homeFolder, ".conf", appName, "conf.toml"),
+					path.Join(homeFolder, ".config", appName, "conf.yaml"),
+					path.Join(homeFolder, ".config", appName, "conf.toml"),
+				},
+			),
 		},
 	)
 	_ = ctx.Run()
@@ -95,4 +104,48 @@ func printBuildTags(buildtags string) {
 		fmt.Printf("%"+strconv.Itoa(maxlen)+"s\t%s\n", el.Key, el.Val)
 	}
 	fmt.Printf("\n")
+}
+
+func returnFirstExistingFile(arr []string) (s string) {
+	for _, el := range arr {
+		if isFile(el) {
+			s = el
+			break
+		}
+	}
+	return
+}
+
+func makeAbs(filename string) string {
+	filename, err := filepath.Abs(filename)
+	if err != nil {
+		fmt.Printf("can not assemble absolute filename %q\n", err)
+		os.Exit(1)
+	}
+	return filename
+}
+
+func isFile(filePath string) bool {
+	stat, err := os.Stat(makeAbs(filePath))
+	if !os.IsNotExist(err) && !stat.IsDir() {
+		return true
+	}
+	return false
+}
+
+func getBindir() (s string) {
+	ex, err := os.Executable()
+	if err != nil {
+		panic(err)
+	}
+	s = filepath.Dir(ex)
+	return
+}
+
+func getHome() string {
+	usr, err := user.Current()
+	if err != nil {
+		fmt.Printf("unable to retrieve user's home folder")
+	}
+	return usr.HomeDir
 }

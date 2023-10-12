@@ -12,7 +12,7 @@ import (
 
 func getCurrentIPData(conf tConf) (ipd tIPDataSet, err error) {
 	var ip string
-	ip, err = getMyIP(conf.RetrievalConf.URLs)
+	ip, err = getMyIP(conf.Retrieval.URLs)
 	if err == nil {
 		ipd = tIPDataSet{
 			Time: time.Now(),
@@ -88,13 +88,13 @@ func displayConnectionInformation(conf tConf) {
 		fmt.Printf("External ip:  %s\n", ipd.IP)
 	}
 
-	body, err := makeSimpleRequest(conf.RetrievalConf.TorCheck)
+	body, err := makeSimpleRequest(conf.Retrieval.TorCheck)
 	if err == nil {
 		torEnabled := rxFind("You are not using Tor", body) == ""
 		fmt.Printf("Tor enabled:  %v\n", torEnabled)
 	}
 
-	for _, url := range conf.RetrievalConf.MoreInfo {
+	for _, url := range conf.Retrieval.MoreInfo {
 		body, err := makeSimpleRequest(url)
 		if err == nil {
 			fmt.Printf("\n%s...\n", url)

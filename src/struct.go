@@ -3,18 +3,21 @@ package main
 import "time"
 
 type tConf struct {
-	Hostname        string            `toml:"hostname"`
-	Token           string            `toml:"token"`
-	URL             string            `toml:"url"`
-	RequestHeaders  map[string]string `toml:"request_headers"`
-	IPRetrievalURLs []string
-	IPData          tIPData
-	IPDataJSON      string
-	IPChanged       bool
-	ForceUpdate     bool
-	DryRun          bool
-	Debug           bool
-	RetrievalConf   tRetrievalConf
+	DNSs        []tDNS         `toml:"dynamic_name_services"`
+	Retrieval   tRetrievalConf `toml:"retrieval"`
+	IPData      tIPData
+	IPDataJSON  string
+	IPChanged   bool
+	ForceUpdate bool
+	DryRun      bool
+	Debug       bool
+}
+
+type tDNS struct {
+	Hostname       string            `toml:"hostname"`
+	Token          string            `toml:"token"`
+	URL            string            `toml:"url"`
+	RequestHeaders map[string]string `toml:"request_headers"`
 }
 
 type tRetrievalConf struct {

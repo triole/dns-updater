@@ -1,51 +1,37 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"os"
-	"path"
-	"strings"
+	"path/filepath"
 
 	"github.com/pelletier/go-toml"
+	"gopkg.in/yaml.v3"
 )
 
 func readConf(filename string) (conf tConf) {
-	if !strings.HasSuffix(filename, ".toml") {
-		filename = filename + ".toml"
+	var err error
+	raw, err := os.ReadFile(filename)
+	if err != nil {
+		log.Fatalf("Error reading config %q, %q", filename, err)
 	}
-	filename = path.Join("embed/conf", filename)
-	data, err := efs.ReadFile(filename)
-	lg.LogIfFileError("read", filename, err, true)
-
-	err = toml.Unmarshal(data, &conf)
-	lg.LogIfFileError("unmarshal", filename, err, true)
-
-	conf.RetrievalConf = readRetrievalConf()
-	conf.IPDataJSON = path.Join(os.TempDir(), "dns-updater.json")
-	conf.ForceUpdate = CLI.Force
-	conf.DryRun = CLI.DryRun
-	conf.Debug = CLI.Debug
-	if !conf.Debug {
-		conf.URL = strings.Replace(conf.URL, "{{.HOSTNAME}}", conf.Hostname, 1)
+	ext := filepath.Ext(filename)
+	if ext == ".toml" {
+		err = toml.Unmarshal(raw, &conf)
 	}
+	if ext == ".yaml" {
+		err = yaml.Unmarshal(raw, &conf)
+	}
+	if err != nil {
+		log.Fatalf("unmarshal error %q, %q", filename, err)
+	}
+
+	// conf.IPDataJSON = path.Join(os.TempDir(), "dns-updater.json")
+	// conf.ForceUpdate = CLI.Force
+	// conf.DryRun = CLI.DryRun
+	// conf.Debug = CLI.Debug
+	// if !conf.Debug {
+	// 	conf.URL = strings.Replace(conf.URL, "{{.HOSTNAME}}", conf.Hostname, 1)
+	// }
 	return conf
-}
-
-func readRetrievalConf() tRetrievalConf {
-	var ipru tRetrievalConf
-	filename := "embed/retrieval_conf.toml"
-	data, err := efs.ReadFile(filename)
-	lg.LogIfFileError("read embedded", filename, err, true)
-
-	err = toml.Unmarshal(data, &ipru)
-	lg.LogIfFileError("unmarshal embedded", filename, err, true)
-	return ipru
-}
-
-func listConfigs() {
-	fmt.Printf("Available configurations:\n")
-	arr, _ := efs.ReadDir("embed/conf")
-	for _, el := range arr {
-		fmt.Printf("  %s\n", strings.Replace(el.Name(), ".toml", "", -1))
-	}
 }

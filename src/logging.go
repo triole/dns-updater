@@ -117,13 +117,13 @@ func (lg Logging) LogIfFileError(msg, filename string, err error, fatal bool) {
 }
 
 // LogDebug logs a debug message
-func (lg Logging) LogDebug(msg string, conf tConf) {
-	if conf.Debug {
-		conf.Token = "{{.TOKEN}}"
-		conf.Hostname = "{{.HOSTNAME}}"
-		conf.RequestHeaders = map[string]string{"map": "dummy"}
-		lg.Logrus.WithFields(logrus.Fields{
-			"all_data": conf,
-		}).Debug(msg)
-	}
-}
+// func (lg Logging) LogDebug(msg string, conf tConf) {
+// 	if conf.Debug {
+// 		conf.Token = "{{.TOKEN}}"
+// 		conf.Hostname = "{{.HOSTNAME}}"
+// 		conf.RequestHeaders = map[string]string{"map": "dummy"}
+// 		lg.Logrus.WithFields(logrus.Fields{
+// 			"all_data": conf,
+// 		}).Debug(msg)
+// 	}
+// }

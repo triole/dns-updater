@@ -1,62 +1,63 @@
 package main
 
 import (
-	"embed"
+	"os"
 	"strings"
 
 	"github.com/sirupsen/logrus"
 )
-
-//go:embed embed/**
-var efs embed.FS
 
 func main() {
 	parseArgs()
 	lg = initLogging(CLI.Logfile)
 	conf := readConf(CLI.Config)
 
-	if CLI.List {
-		listConfigs()
-	} else if CLI.Info {
+	if CLI.Info {
 		displayConnectionInformation(conf)
-	} else {
-		if CLI.IP != "" {
-			conf.IPData.Current.IP = CLI.IP
-			CLI.Force = true
-		} else {
-			conf.IPData.Current, _ = getCurrentIPData(conf)
-		}
+		os.Exit(0)
+	}
 
-		if conf.IPData.Current.IP == "" {
-			lg.LogFatal("ip retrieval failed", nil)
+	if CLI.IP != "" {
+		conf.IPData.Current.IP = CLI.IP
+		CLI.Force = true
+		os.Exit(0)
+	}
+
+	conf.IPData.Current, _ = getCurrentIPData(conf)
+	if conf.IPData.Current.IP == "" {
+		lg.LogFatal("ip retrieval failed", nil)
+	}
+
+	conf.IPData.Old = readIPDataJSON()
+	conf.IPChanged = conf.IPData.Old.IP != conf.IPData.Current.IP
+	if conf.IPChanged || CLI.Force {
+		if conf.DryRun {
+			lg.LogStatus(
+				"dry run, skip update request", conf.IPData, conf.ForceUpdate,
+			)
 		} else {
-			conf.IPData.Old = readIPDataJSON()
-			conf.IPChanged = conf.IPData.Old.IP != conf.IPData.Current.IP
-			lg.LogDebug("debug output", conf)
-			if conf.IPChanged || CLI.Force {
-				if conf.DryRun {
-					lg.LogStatus(
-						"dry run, skip update request", conf.IPData, conf.ForceUpdate,
-					)
-				} else {
-					writeIPDataJSON(conf.IPData.Current)
-					conf.URL = strings.Replace(
-						conf.URL, "{{.IP}}", conf.IPData.Current.IP, 1,
-					)
-					err := updateDNS(conf)
-					lg.LogIfError(
-						err,
-						"update request failed", logrus.Fields{
-							"current_ip": conf.IPData.Current.IP,
-							"err":        err,
-						},
-					)
-				}
-			} else {
-				lg.LogStatus(
-					"skip update request", conf.IPData, conf.ForceUpdate,
-				)
-			}
+			conf.iterDNSServicesAndPost()
 		}
+	} else {
+		lg.LogStatus(
+			"skip update request", conf.IPData, conf.ForceUpdate,
+		)
+	}
+}
+
+func (conf tConf) iterDNSServicesAndPost() {
+	writeIPDataJSON(conf.IPData.Current)
+	for _, dns := range conf.DNSs {
+		dns.URL = strings.Replace(
+			dns.URL, "{{.IP}}", conf.IPData.Current.IP, 1,
+		)
+		err := updateDNS(dns)
+		lg.LogIfError(
+			err,
+			"update request failed", logrus.Fields{
+				"current_ip": conf.IPData.Current.IP,
+				"err":        err,
+			},
+		)
 	}
 }

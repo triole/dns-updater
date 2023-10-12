@@ -13,25 +13,25 @@ func basicAuth(username, password string) string {
 	return base64.StdEncoding.EncodeToString([]byte(auth))
 }
 
-func updateDNS(conf tConf) (err error) {
+func updateDNS(dns tDNS) (err error) {
 	lg.LogInfo("fire update request", logrus.Fields{
-		"url": conf.URL,
+		"url": dns.URL,
 	})
-	err = makeUpdateRequest(conf)
+	err = makeUpdateRequest(dns)
 	return
 }
 
-func makeUpdateRequest(conf tConf) (err error) {
+func makeUpdateRequest(dns tDNS) (err error) {
 	var client http.Client
 	var req *http.Request
 	var response *http.Response
-	req, err = http.NewRequest("GET", conf.URL, nil)
+	req, err = http.NewRequest("GET", dns.URL, nil)
 
 	lg.LogIfError(err, "error initializing request", logrus.Fields{
 		"err": err,
 	})
 	if err == nil {
-		req.Header.Add("Authorization", "Basic "+basicAuth(conf.Hostname, conf.Token))
+		req.Header.Add("Authorization", "Basic "+basicAuth(dns.Hostname, dns.Token))
 		response, err = client.Do(req)
 		lg.LogIfError(
 			err, "error during request", logrus.Fields{
