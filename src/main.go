@@ -41,6 +41,7 @@ func main() {
 		"changed": conf.IPChanged,
 	})
 	if conf.IPChanged || CLI.Force {
+		conf.writeIPDataJSON(conf.IPData.Current)
 		conf.iterDNSServicesAndPost()
 	} else {
 		lg.Info("skip dns update")
@@ -49,7 +50,6 @@ func main() {
 }
 
 func (conf *tConf) iterDNSServicesAndPost() {
-	conf.writeIPDataJSON(conf.IPData.Current)
 	for _, dns := range conf.DNSs {
 		err := conf.makeUpdateRequest(dns)
 		lg.IfErrError(

@@ -17,6 +17,7 @@ func (conf *tConf) getMyIP() (err error) {
 	)
 	if err == nil {
 		conf.IPData.Current.IP = ip
+		conf.IPData.Current.Time = time.Now()
 	}
 	return err
 }
