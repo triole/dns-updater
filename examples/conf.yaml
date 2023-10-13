@@ -1,6 +1,8 @@
 ---
 dynamic_name_services:
-  - hostname = "hostname" token = "very_secret_token" url = "dns_service_url"
+  - hostname = "hostname"
+  - token = "very_secret_token"
+  - url = "dns_service_url"
 
 retrieval_urls:
   - https://api.ip.sb/ip
