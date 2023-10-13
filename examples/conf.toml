@@ -11,8 +11,6 @@ retrieval_urls = [
 
 torcheck = "https://check.torproject.org/?lang=en_EN"
 
-more_info = ["http://ip-api.com/line"]
-
 [[dynamic_name_services]]
 hostname = "hostname"
 token = "very_secret_token"

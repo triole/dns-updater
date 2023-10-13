@@ -24,7 +24,6 @@ var (
 )
 
 var CLI struct {
-	Info        bool   `help:"fetch current ip, no dyndns update" short:"i"`
 	Config      string `help:"config file to use" default:"${config}" short:"c"`
 	Force       bool   `help:"force update request irrespective of the current ip" short:"f"`
 	IP          string `help:"use a specific ip to update" short:"p"`
@@ -32,7 +31,7 @@ var CLI struct {
 	LogLevel    string `help:"log level" short:"e" default:"info" enum:"debug,info,error"`
 	LogNoColors bool   `help:"disable output colours, print plain text"`
 	LogJSON     bool   `help:"enable json log, instead of text one"`
-	DataJSON    string `help:"json file to store ip information to be read in later runs" default:"${datajson}" short:"t"`
+	DataJSON    string `help:"json file to store ip information to be read in later runs" default:"${datajson}" short:"d"`
 	DryRun      bool   `help:"do not send update request" short:"n"`
 	VersionFlag bool   `help:"display version" short:"V"`
 }

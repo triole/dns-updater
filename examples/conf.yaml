@@ -13,6 +13,3 @@ retrieval_urls:
   - https://jsonip.com
 
 torcheck: https://check.torproject.org/?lang=en_EN
-
-more_info:
-  - http://ip-api.com/line

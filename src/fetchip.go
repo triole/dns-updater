@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"io"
 	"net/http"
 	"time"
@@ -66,26 +65,4 @@ func (conf *tConf) fetchIP(url string, ch chan<- string) {
 		})
 	}
 	ch <- ip
-}
-
-func (conf *tConf) torCheck() {
-	body, err := req(conf.Retrieval.TorCheck)
-	if err == nil {
-		torEnabled := rxFind("You are not using Tor", body) == ""
-		fmt.Printf("Tor enabled:  %v\n", torEnabled)
-	}
-
-}
-
-func moreInformation(conf *tConf) {
-	for _, url := range conf.Retrieval.MoreInfo {
-		body, err := req(url)
-		if err == nil {
-			lg.Info("more information", logseal.F{
-				"url":  url,
-				"body": body,
-			})
-		}
-	}
-	fmt.Printf("")
 }

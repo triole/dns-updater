@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 
 	"github.com/triole/logseal"
@@ -19,12 +20,19 @@ func (conf *tConf) readIPDataJSON() (ipd tIPDataSet) {
 	} else {
 		raw, err := os.ReadFile(conf.DataJSONFile)
 		lg.IfErrError("read", conf.DataJSONFile, err, false)
-
-		err = json.Unmarshal(raw, &ipd)
-		lg.IfErrError("can not unmarshal", logseal.F{
-			"data":  conf.DataJSONFile,
-			"error": err,
-		})
+		if err == nil {
+			err = json.Unmarshal(raw, &ipd)
+			lg.IfErrError("can not unmarshal", logseal.F{
+				"path":  conf.DataJSONFile,
+				"error": err,
+			})
+			if err == nil {
+				lg.Debug("data json info", logseal.F{
+					"path":    conf.DataJSONFile,
+					"content": fmt.Sprintf("%+v", ipd),
+				})
+			}
+		}
 	}
 	return
 }

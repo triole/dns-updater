@@ -19,30 +19,26 @@ func main() {
 
 	conf := readConf(CLI.Config)
 	lg.Debug("config layout and data json location", logseal.F{
-		"conf":     conf,
+		"conf":     fmt.Sprintf("%+v", conf),
 		"datajson": conf.DataJSONFile,
 	})
 	_ = conf.getMyIP()
 
-	if !CLI.Info {
-		if CLI.IP != "" {
-			conf.IPData.Current.IP = CLI.IP
-			CLI.Force = true
-			os.Exit(0)
-		}
+	if CLI.IP != "" {
+		conf.IPData.Current.IP = CLI.IP
+		CLI.Force = true
+		os.Exit(0)
+	}
 
-		// conf.IPData.Current, _ = conf.getCurrentIPData(conf)
-		if conf.IPData.Current.IP == "" {
-			lg.Fatal("ip retrieval failed", logseal.F{"ip": conf.IPData.Current.IP})
-		}
+	// conf.IPData.Current, _ = conf.getCurrentIPData(conf)
+	if conf.IPData.Current.IP == "" {
+		lg.Fatal("ip retrieval failed", logseal.F{"ip": conf.IPData.Current.IP})
+	}
 
-		conf.IPData.Old = conf.readIPDataJSON()
-		fmt.Printf("%+v\n", conf.IPData.Old)
-
-		conf.IPChanged = conf.IPData.Old.IP != conf.IPData.Current.IP
-		if conf.IPChanged || CLI.Force {
-			conf.iterDNSServicesAndPost()
-		}
+	conf.IPData.Old = conf.readIPDataJSON()
+	conf.IPChanged = conf.IPData.Old.IP != conf.IPData.Current.IP
+	if conf.IPChanged || CLI.Force {
+		conf.iterDNSServicesAndPost()
 	}
 }
 
