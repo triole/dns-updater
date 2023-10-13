@@ -10,7 +10,8 @@ import (
 	"github.com/triole/logseal"
 )
 
-func (conf tConf) getMyIP(ipRetrievalURLs []string) (ip string, err error) {
+func (conf tConf) getMyIP(ipRetrievalURLs []string) (err error) {
+	var ip string
 	ip, err = conf.getMyIPWorker(ipRetrievalURLs)
 	lg.IfErrError(
 		"can not fetch current ip", logseal.F{"error": err},
@@ -20,7 +21,8 @@ func (conf tConf) getMyIP(ipRetrievalURLs []string) (ip string, err error) {
 			"fetch current ip success", logseal.F{"ip": ip},
 		)
 	}
-	return ip, err
+	conf.IPData.Current.IP = ip
+	return err
 }
 
 func (conf tConf) getMyIPWorker(urlList []string) (ip string, err error) {
@@ -36,7 +38,7 @@ func (conf tConf) getMyIPWorker(urlList []string) (ip string, err error) {
 	}
 	if ip == "" {
 		err = errors.New(
-			"none if the fetched urls was able to provide a valid IP address",
+			"none of the fetch requests provided a valid IP address",
 		)
 	}
 	return ip, err

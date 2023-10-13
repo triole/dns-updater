@@ -3,14 +3,14 @@ package main
 import "time"
 
 type tConf struct {
-	DNSs        []tDNS         `toml:"dynamic_name_services"`
-	Retrieval   tRetrievalConf `toml:"retrieval"`
-	IPData      tIPData
-	IPDataJSON  string
-	IPChanged   bool
-	ForceUpdate bool
-	DryRun      bool
-	Debug       bool
+	DNSs         []tDNS         `toml:"dynamic_name_services"`
+	Retrieval    tRetrievalConf `toml:"retrieval"`
+	IPData       tIPData
+	DataJSONFile string
+	IPChanged    bool
+	ForceUpdate  bool
+	DryRun       bool
+	Debug        bool
 }
 
 type tDNS struct {

@@ -13,11 +13,7 @@ func main() {
 	lg = logseal.Init(CLI.LogLevel, CLI.LogFile, CLI.LogNoColors, CLI.LogJSON)
 	conf := readConf(CLI.Config)
 
-	ipd, err := conf.getMyIP(conf.Retrieval.URLs)
-	lg.IfErrFatal(
-		"cat not fetch current ip", logseal.F{"error": err},
-	)
-	lg.Info("fetch current ip success", logseal.F{"ip": ipd})
+	_ = conf.getMyIP(conf.Retrieval.URLs)
 
 	if !CLI.Info {
 		if CLI.IP != "" {
@@ -31,7 +27,7 @@ func main() {
 			lg.Fatal("ip retrieval failed", nil)
 		}
 
-		conf.IPData.Old = readIPDataJSON()
+		conf.IPData.Old = conf.readIPDataJSON()
 		conf.IPChanged = conf.IPData.Old.IP != conf.IPData.Current.IP
 		if conf.IPChanged || CLI.Force {
 			conf.iterDNSServicesAndPost()
@@ -40,7 +36,7 @@ func main() {
 }
 
 func (conf tConf) iterDNSServicesAndPost() {
-	writeIPDataJSON(conf.IPData.Current)
+	conf.writeIPDataJSON(conf.IPData.Current)
 	for _, dns := range conf.DNSs {
 		dns.URL = strings.Replace(
 			dns.URL, "{{.IP}}", conf.IPData.Current.IP, 1,
