@@ -5,43 +5,37 @@ import (
 	"strings"
 
 	"github.com/sirupsen/logrus"
+	"github.com/triole/logseal"
 )
 
 func main() {
 	parseArgs()
-	lg = initLogging(CLI.Logfile)
+	lg = logseal.Init(CLI.LogLevel, CLI.LogFile, CLI.LogNoColors, CLI.LogJSON)
 	conf := readConf(CLI.Config)
 
-	if CLI.Info {
-		displayConnectionInformation(conf)
-		os.Exit(0)
-	}
+	ipd, err := conf.getMyIP(conf.Retrieval.URLs)
+	lg.IfErrFatal(
+		"cat not fetch current ip", logseal.F{"error": err},
+	)
+	lg.Info("fetch current ip success", logseal.F{"ip": ipd})
 
-	if CLI.IP != "" {
-		conf.IPData.Current.IP = CLI.IP
-		CLI.Force = true
-		os.Exit(0)
-	}
+	if !CLI.Info {
+		if CLI.IP != "" {
+			conf.IPData.Current.IP = CLI.IP
+			CLI.Force = true
+			os.Exit(0)
+		}
 
-	conf.IPData.Current, _ = getCurrentIPData(conf)
-	if conf.IPData.Current.IP == "" {
-		lg.LogFatal("ip retrieval failed", nil)
-	}
+		// conf.IPData.Current, _ = getCurrentIPData(conf)
+		if conf.IPData.Current.IP == "" {
+			lg.Fatal("ip retrieval failed", nil)
+		}
 
-	conf.IPData.Old = readIPDataJSON()
-	conf.IPChanged = conf.IPData.Old.IP != conf.IPData.Current.IP
-	if conf.IPChanged || CLI.Force {
-		if conf.DryRun {
-			lg.LogStatus(
-				"dry run, skip update request", conf.IPData, conf.ForceUpdate,
-			)
-		} else {
+		conf.IPData.Old = readIPDataJSON()
+		conf.IPChanged = conf.IPData.Old.IP != conf.IPData.Current.IP
+		if conf.IPChanged || CLI.Force {
 			conf.iterDNSServicesAndPost()
 		}
-	} else {
-		lg.LogStatus(
-			"skip update request", conf.IPData, conf.ForceUpdate,
-		)
 	}
 }
 
@@ -52,7 +46,7 @@ func (conf tConf) iterDNSServicesAndPost() {
 			dns.URL, "{{.IP}}", conf.IPData.Current.IP, 1,
 		)
 		err := updateDNS(dns)
-		lg.LogIfError(
+		lg.IfErrError(
 			err,
 			"update request failed", logrus.Fields{
 				"current_ip": conf.IPData.Current.IP,

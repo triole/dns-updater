@@ -11,7 +11,7 @@ import (
 	"strings"
 
 	"github.com/alecthomas/kong"
-	"github.com/sirupsen/logrus"
+	"github.com/triole/logseal"
 )
 
 var (
@@ -21,30 +21,24 @@ var (
 	appDescription = "Send update requests containing the current external ip to a dns service"
 	appMainversion = "0.1"
 	fileIPDataJSON = "/tmp/dns-updater.json"
-	lg             Logging
+	lg             logseal.Logseal
 )
 
 var CLI struct {
-	Info        bool   `help:"just display connection information, no dyndns update at all" short:"j"`
+	Info        bool   `help:"fetch current ip, no dyndns update" short:"i"`
 	Config      string `help:"config file to use" default:"${config}" short:"c"`
-	List        bool   `help:"list embedded configs" short:"g"`
 	Force       bool   `help:"force update request irrespective of the current ip" short:"f"`
-	IP          string `help:"use a specific ip to update" short:"i"`
-	Logfile     string `help:"file to process, positional required" default:"${logfile}" short:"l"`
-	Debug       bool   `help:"enable debug output" short:"d"`
+	IP          string `help:"use a specific ip to update" short:"p"`
+	LogFile     string `help:"file to process, positional required" default:"${logfile}" short:"l"`
+	LogLevel    string `help:"log level" short:"e" default:"info" enum:"debug,info,error"`
+	LogNoColors bool   `help:"disable output colours, print plain text"`
+	LogJSON     bool   `help:"enable json log, instead of text one"`
 	DryRun      bool   `help:"do not send update request" short:"n"`
 	VersionFlag bool   `help:"display version" short:"V"`
 }
 
 func parseArgs() {
-	user, err := user.Current()
 	homeFolder := getHome()
-	if err != nil {
-		lg.LogFatal("unable to detect user", logrus.Fields{
-			"err": err,
-		})
-	}
-	homeDir := user.HomeDir
 	ctx := kong.Parse(&CLI,
 		kong.Name(appName),
 		kong.Description(appDescription),
@@ -56,7 +50,7 @@ func parseArgs() {
 			FlagsLast:    false,
 		}),
 		kong.Vars{
-			"logfile": path.Join(homeDir, ".var", "log", appName+".log"),
+			"logfile": "/dev/stdout",
 			"config": returnFirstExistingFile(
 				[]string{
 					path.Join(getBindir(), appName+".toml"),

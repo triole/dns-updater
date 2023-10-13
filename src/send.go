@@ -5,7 +5,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/sirupsen/logrus"
+	"github.com/triole/logseal"
 )
 
 func basicAuth(username, password string) string {
@@ -14,7 +14,7 @@ func basicAuth(username, password string) string {
 }
 
 func updateDNS(dns tDNS) (err error) {
-	lg.LogInfo("fire update request", logrus.Fields{
+	lg.Info("fire update request", logseal.F{
 		"url": dns.URL,
 	})
 	err = makeUpdateRequest(dns)
@@ -25,37 +25,38 @@ func makeUpdateRequest(dns tDNS) (err error) {
 	var client http.Client
 	var req *http.Request
 	var response *http.Response
-	req, err = http.NewRequest("GET", dns.URL, nil)
 
-	lg.LogIfError(err, "error initializing request", logrus.Fields{
+	req, err = http.NewRequest("GET", dns.URL, nil)
+	lg.IfErrError("can not initialize request", logseal.F{
 		"err": err,
 	})
+
 	if err == nil {
 		req.Header.Add("Authorization", "Basic "+basicAuth(dns.Hostname, dns.Token))
 		response, err = client.Do(req)
-		lg.LogIfError(
-			err, "error during request", logrus.Fields{
+		lg.IfErrError(
+			"update request failed", logseal.F{
 				"err": err,
 			})
 
 		if response.StatusCode == 200 {
-			lg.LogInfo("request success", logrus.Fields{
+			lg.Info("request success", logseal.F{
 				"status_code": response.StatusCode,
 			})
 
 			defer response.Body.Close()
 			bytes, err := io.ReadAll(response.Body)
-			lg.LogIfError(
-				err, "can not read body", logrus.Fields{
+			lg.IfErrError(
+				"can not read body", logseal.F{
 					"err": err,
 				})
 
-			lg.LogInfo("got response", logrus.Fields{
+			lg.Info("got response", logseal.F{
 				"body": string(bytes),
 			})
 
 		} else {
-			lg.LogFatal("update request failed", logrus.Fields{
+			lg.Fatal("update request failed", logseal.F{
 				"status_code": response.StatusCode,
 			})
 		}

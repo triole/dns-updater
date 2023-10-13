@@ -1,10 +1,4 @@
-[[dynamic_name_services]]
-hostname = "hostname"
-token = "very_secret_token"
-url = "dns_service_url"
-
-[retrieval]
-urls = [
+retrieval_urls = [
   "https://api.ip.sb/ip",
   "http://icanhazip.com",
   "https://ident.me",
@@ -15,5 +9,11 @@ urls = [
   "https://jsonip.com",
 ]
 
-more_info = ["http://ip-api.com/line"]
 torcheck = "https://check.torproject.org/?lang=en_EN"
+
+more_info = ["http://ip-api.com/line"]
+
+[[dynamic_name_services]]
+hostname = "hostname"
+token = "very_secret_token"
+url = "dns_service_url"

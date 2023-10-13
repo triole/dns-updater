@@ -1,10 +1,30 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
+	"io"
+	"net/http"
 	"regexp"
+	"time"
+
+	"github.com/sirupsen/logrus"
 )
+
+func req(url string) (string, error) {
+	var bytes []byte
+	timeout := time.Duration(5 * time.Second)
+	client := http.Client{
+		Timeout: timeout,
+	}
+	resp, err := client.Get(url)
+	if err == nil {
+		bytes, _ = io.ReadAll(resp.Body)
+	} else {
+		lg.Error("request failed", logrus.Fields{
+			"url": url,
+		})
+	}
+	return string(bytes), err
+}
 
 func rxFindIP(content string) (r string) {
 	r = rxFind(
@@ -18,9 +38,4 @@ func rxFind(rx string, content string) (r string) {
 	temp, _ := regexp.Compile(rx)
 	r = temp.FindString(content)
 	return
-}
-
-func pprint(i interface{}) {
-	s, _ := json.MarshalIndent(i, "", "\t")
-	fmt.Println(string(s))
 }
