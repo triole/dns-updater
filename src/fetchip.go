@@ -10,27 +10,24 @@ import (
 	"github.com/triole/logseal"
 )
 
-func (conf tConf) getMyIP(ipRetrievalURLs []string) (err error) {
+func (conf *tConf) getMyIP() (err error) {
 	var ip string
-	ip, err = conf.getMyIPWorker(ipRetrievalURLs)
+	ip, err = conf.getMyIPWorker()
 	lg.IfErrError(
 		"can not fetch current ip", logseal.F{"error": err},
 	)
 	if err == nil {
-		lg.Info(
-			"fetch current ip success", logseal.F{"ip": ip},
-		)
+		conf.IPData.Current.IP = ip
 	}
-	conf.IPData.Current.IP = ip
 	return err
 }
 
-func (conf tConf) getMyIPWorker(urlList []string) (ip string, err error) {
+func (conf *tConf) getMyIPWorker() (ip string, err error) {
 	ch := make(chan string)
-	for _, url := range urlList {
+	for _, url := range conf.Retrieval.URLs {
 		go conf.fetchIP(url, ch)
 	}
-	for i := 0; i < len(urlList); i++ {
+	for i := 0; i < len(conf.Retrieval.URLs); i++ {
 		ip = <-ch
 		if ip != "" {
 			break
@@ -44,7 +41,7 @@ func (conf tConf) getMyIPWorker(urlList []string) (ip string, err error) {
 	return ip, err
 }
 
-func (conf tConf) fetchIP(url string, ch chan<- string) {
+func (conf *tConf) fetchIP(url string, ch chan<- string) {
 	var ip string
 	timeout := time.Duration(5 * time.Second)
 	client := http.Client{
@@ -57,10 +54,12 @@ func (conf tConf) fetchIP(url string, ch chan<- string) {
 	if err == nil {
 		body, _ := io.ReadAll(resp.Body)
 		ip = rxFindIP(string(body))
-		lg.Debug("current ip fetch success", logseal.F{
-			"url": url,
-			"ip":  ip,
-		})
+		if ip != "" {
+			lg.Info("fetch current ip success", logseal.F{
+				"url": url,
+				"ip":  ip,
+			})
+		}
 	} else {
 		lg.Error("request failed", logseal.F{
 			"url": url,
@@ -69,7 +68,7 @@ func (conf tConf) fetchIP(url string, ch chan<- string) {
 	ch <- ip
 }
 
-func (conf tConf) torCheck() {
+func (conf *tConf) torCheck() {
 	body, err := req(conf.Retrieval.TorCheck)
 	if err == nil {
 		torEnabled := rxFind("You are not using Tor", body) == ""
@@ -78,7 +77,7 @@ func (conf tConf) torCheck() {
 
 }
 
-func moreInformation(conf tConf) {
+func moreInformation(conf *tConf) {
 	for _, url := range conf.Retrieval.MoreInfo {
 		body, err := req(url)
 		if err == nil {

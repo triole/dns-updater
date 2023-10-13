@@ -11,9 +11,16 @@ import (
 func main() {
 	parseArgs()
 	lg = logseal.Init(CLI.LogLevel, CLI.LogFile, CLI.LogNoColors, CLI.LogJSON)
-	conf := readConf(CLI.Config)
+	lg.Info("start dns-updater", logseal.F{
+		"loglevel": CLI.LogLevel,
+		"logfile":  CLI.LogFile,
+	})
 
-	_ = conf.getMyIP(conf.Retrieval.URLs)
+	conf := readConf(CLI.Config)
+	lg.Debug("configuration layout", logseal.F{
+		"conf": conf,
+	})
+	_ = conf.getMyIP()
 
 	if !CLI.Info {
 		if CLI.IP != "" {
@@ -22,7 +29,7 @@ func main() {
 			os.Exit(0)
 		}
 
-		// conf.IPData.Current, _ = getCurrentIPData(conf)
+		// conf.IPData.Current, _ = conf.getCurrentIPData(conf)
 		if conf.IPData.Current.IP == "" {
 			lg.Fatal("ip retrieval failed", nil)
 		}
@@ -35,7 +42,7 @@ func main() {
 	}
 }
 
-func (conf tConf) iterDNSServicesAndPost() {
+func (conf *tConf) iterDNSServicesAndPost() {
 	conf.writeIPDataJSON(conf.IPData.Current)
 	for _, dns := range conf.DNSs {
 		dns.URL = strings.Replace(

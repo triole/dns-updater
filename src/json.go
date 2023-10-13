@@ -7,7 +7,7 @@ import (
 	"github.com/triole/logseal"
 )
 
-func (conf tConf) readIPDataJSON() (ipd tIPDataSet) {
+func (conf *tConf) readIPDataJSON() (ipd tIPDataSet) {
 	_, err := os.Stat(conf.DataJSONFile)
 	if os.IsNotExist(err) {
 		lg.Info(
@@ -26,7 +26,7 @@ func (conf tConf) readIPDataJSON() (ipd tIPDataSet) {
 	return
 }
 
-func (conf tConf) writeIPDataJSON(ipd tIPDataSet) {
+func (conf *tConf) writeIPDataJSON(ipd tIPDataSet) {
 	var err error
 	JSONstring, _ := json.Marshal(ipd)
 	err = os.WriteFile(conf.DataJSONFile, JSONstring, 0644)
