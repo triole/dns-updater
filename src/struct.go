@@ -13,6 +13,7 @@ type tConf struct {
 	ForceUpdate        bool
 	DryRun             bool
 	Debug              bool
+	ExitCode           int8
 }
 
 type tDNS struct {

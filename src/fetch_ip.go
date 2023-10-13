@@ -63,6 +63,7 @@ func (conf *tConf) fetchIP(url string, ch chan<- string) {
 		lg.Error("request failed", logseal.F{
 			"url": url,
 		})
+		conf.ExitCode = 1
 	}
 	ch <- ip
 }

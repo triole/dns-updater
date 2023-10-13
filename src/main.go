@@ -45,6 +45,7 @@ func main() {
 	} else {
 		lg.Info("skip dns update")
 	}
+	lg.Info("done", logseal.F{"exitcode": conf.ExitCode})
 }
 
 func (conf *tConf) iterDNSServicesAndPost() {

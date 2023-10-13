@@ -35,6 +35,7 @@ func readConf(filename string) (conf tConf) {
 	conf.ForceUpdate = CLI.Force
 	conf.DryRun = CLI.DryRun
 	conf.DataJSONFile = CLI.DataJSON
+	conf.ExitCode = 0
 
 	for idx, el := range conf.RetrievalURLs {
 		conf.RetrievalURLs[idx] = os.ExpandEnv(el)

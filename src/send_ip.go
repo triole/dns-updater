@@ -51,6 +51,7 @@ func (conf *tConf) makeUpdateRequest(dns tDNS) (err error) {
 
 		if response == nil {
 			lg.Error("request response is empty")
+			conf.ExitCode = 1
 		} else {
 			if response.StatusCode == 200 {
 				lg.Info("request success", logseal.F{
@@ -71,6 +72,7 @@ func (conf *tConf) makeUpdateRequest(dns tDNS) (err error) {
 				lg.Error("update request failed", logseal.F{
 					"status_code": response.StatusCode,
 				})
+				conf.ExitCode = 1
 			}
 		}
 	}
