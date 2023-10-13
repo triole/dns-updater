@@ -19,7 +19,7 @@ var (
 	BUILDTAGS      string
 	appName        = "dns-updater"
 	appDescription = "Send update requests containing the current external ip to a dns service"
-	appMainversion = "0.1"
+	appMainversion = "0.2"
 	lg             logseal.Logseal
 )
 
