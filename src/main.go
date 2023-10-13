@@ -17,8 +17,9 @@ func main() {
 	})
 
 	conf := readConf(CLI.Config)
-	lg.Debug("configuration layout", logseal.F{
-		"conf": conf,
+	lg.Debug("config layout and data json location", logseal.F{
+		"conf":     conf,
+		"datajson": conf.DataJSONFile,
 	})
 	_ = conf.getMyIP()
 
@@ -31,7 +32,7 @@ func main() {
 
 		// conf.IPData.Current, _ = conf.getCurrentIPData(conf)
 		if conf.IPData.Current.IP == "" {
-			lg.Fatal("ip retrieval failed", nil)
+			lg.Fatal("ip retrieval failed", logseal.F{"ip": conf.IPData.Current.IP})
 		}
 
 		conf.IPData.Old = conf.readIPDataJSON()

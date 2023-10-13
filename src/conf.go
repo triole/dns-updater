@@ -15,7 +15,7 @@ func readConf(filename string) (conf tConf) {
 	lg.Info("read config", logseal.F{"file": filename})
 	raw, err := os.ReadFile(filename)
 	if err != nil {
-		log.Fatalf("Error reading config %q, %q", filename, err)
+		log.Fatalf("error reading config %q, %q", filename, err)
 	}
 	ext := filepath.Ext(filename)
 	if ext == ".toml" {
@@ -31,6 +31,7 @@ func readConf(filename string) (conf tConf) {
 	// conf.IPDataJSON = path.Join(os.TempDir(), "dns-updater.json")
 	conf.ForceUpdate = CLI.Force
 	conf.DryRun = CLI.DryRun
+	conf.DataJSONFile = CLI.DataJSON
 	for idx, el := range conf.Retrieval.URLs {
 		conf.Retrieval.URLs[idx] = os.ExpandEnv(el)
 	}

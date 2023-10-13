@@ -32,7 +32,7 @@ var CLI struct {
 	LogLevel    string `help:"log level" short:"e" default:"info" enum:"debug,info,error"`
 	LogNoColors bool   `help:"disable output colours, print plain text"`
 	LogJSON     bool   `help:"enable json log, instead of text one"`
-	DataJSON    string `help:"json file to store ip information to be read in later runs" short:"t"`
+	DataJSON    string `help:"json file to store ip information to be read in later runs" default:"${datajson}" short:"t"`
 	DryRun      bool   `help:"do not send update request" short:"n"`
 	VersionFlag bool   `help:"display version" short:"V"`
 }
