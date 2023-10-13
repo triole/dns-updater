@@ -8,6 +8,9 @@ import (
 )
 
 func (conf *tConf) readIPDataJSON() (ipd tIPDataSet) {
+	lg.Debug("read data json", logseal.F{
+		"path": conf.DataJSONFile,
+	})
 	_, err := os.Stat(conf.DataJSONFile)
 	if os.IsNotExist(err) {
 		lg.Info(

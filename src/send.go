@@ -13,14 +13,6 @@ func basicAuth(username, password string) string {
 	return base64.StdEncoding.EncodeToString([]byte(auth))
 }
 
-func updateDNS(dns tDNS) (err error) {
-	lg.Info("fire update request", logseal.F{
-		"url": dns.URL,
-	})
-	err = makeUpdateRequest(dns)
-	return
-}
-
 func makeUpdateRequest(dns tDNS) (err error) {
 	var client http.Client
 	var req *http.Request
@@ -39,26 +31,29 @@ func makeUpdateRequest(dns tDNS) (err error) {
 				"err": err,
 			})
 
-		if response.StatusCode == 200 {
-			lg.Info("request success", logseal.F{
-				"status_code": response.StatusCode,
-			})
-
-			defer response.Body.Close()
-			bytes, err := io.ReadAll(response.Body)
-			lg.IfErrError(
-				"can not read body", logseal.F{
-					"err": err,
+		if response == nil {
+			lg.Error("request response is empty")
+		} else {
+			if response.StatusCode == 200 {
+				lg.Info("request success", logseal.F{
+					"status_code": response.StatusCode,
 				})
 
-			lg.Info("got response", logseal.F{
-				"body": string(bytes),
-			})
+				defer response.Body.Close()
+				bytes, err := io.ReadAll(response.Body)
+				lg.IfErrError(
+					"can not read body", logseal.F{
+						"err": err,
+					})
 
-		} else {
-			lg.Fatal("update request failed", logseal.F{
-				"status_code": response.StatusCode,
-			})
+				lg.Info("got response", logseal.F{
+					"body": string(bytes),
+				})
+			} else {
+				lg.Error("update request failed", logseal.F{
+					"status_code": response.StatusCode,
+				})
+			}
 		}
 	}
 	return

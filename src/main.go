@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"strings"
 
@@ -36,6 +37,8 @@ func main() {
 		}
 
 		conf.IPData.Old = conf.readIPDataJSON()
+		fmt.Printf("%+v\n", conf.IPData.Old)
+
 		conf.IPChanged = conf.IPData.Old.IP != conf.IPData.Current.IP
 		if conf.IPChanged || CLI.Force {
 			conf.iterDNSServicesAndPost()
@@ -49,7 +52,10 @@ func (conf *tConf) iterDNSServicesAndPost() {
 		dns.URL = strings.Replace(
 			dns.URL, "{{.IP}}", conf.IPData.Current.IP, 1,
 		)
-		err := updateDNS(dns)
+		lg.Info("fire update request", logseal.F{
+			"url": dns.URL,
+		})
+		err := makeUpdateRequest(dns)
 		lg.IfErrError(
 			err,
 			"update request failed", logrus.Fields{
