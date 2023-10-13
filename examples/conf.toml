@@ -9,9 +9,8 @@ retrieval_urls = [
   "https://jsonip.com",
 ]
 
-torcheck = "https://check.torproject.org/?lang=en_EN"
-
 [[dynamic_name_services]]
-hostname = "hostname"
-token = "very_secret_token"
-url = "dns_service_url"
+method = "get"
+url = "http://anydnsservice.com?user={{.hostname}}&pass={{.token}}&hostname={{.hostname}}&myip={{.ip}}"
+hostname = "my_hostname"
+token = "my_token"

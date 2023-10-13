@@ -42,7 +42,7 @@ func (conf *tConf) getMyIPWorker() (ip string, err error) {
 
 func (conf *tConf) fetchIP(url string, ch chan<- string) {
 	var ip string
-	timeout := time.Duration(5 * time.Second)
+	timeout := time.Duration(time.Duration(conf.RequestsTimeout) * time.Second)
 	client := http.Client{
 		Timeout: timeout,
 	}

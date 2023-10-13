@@ -27,6 +27,7 @@ var CLI struct {
 	Config      string `help:"config file to use" default:"${config}" short:"c"`
 	Force       bool   `help:"force update request irrespective of the current ip" short:"f"`
 	IP          string `help:"use a specific ip to update" short:"p"`
+	Timeout     int64  `help:"web requests timeout in seconds" default:"5" short:"t"`
 	LogFile     string `help:"file to process, positional required" default:"${logfile}" short:"l"`
 	LogLevel    string `help:"log level" short:"e" default:"info" enum:"debug,info,error"`
 	LogNoColors bool   `help:"disable output colours, print plain text"`

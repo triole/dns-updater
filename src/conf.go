@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/pelletier/go-toml"
 	"github.com/triole/logseal"
@@ -27,8 +28,10 @@ func readConf(filename string) (conf tConf) {
 	if err != nil {
 		log.Fatalf("unmarshal error %q, %q", filename, err)
 	}
-
-	// conf.IPDataJSON = path.Join(os.TempDir(), "dns-updater.json")
+	conf.RequestsTimeoutInt = CLI.Timeout
+	conf.RequestsTimeout = time.Duration(
+		time.Duration(conf.RequestsTimeoutInt) * time.Second,
+	)
 	conf.ForceUpdate = CLI.Force
 	conf.DryRun = CLI.DryRun
 	conf.DataJSONFile = CLI.DataJSON

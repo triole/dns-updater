@@ -4,16 +4,14 @@ import (
 	"io"
 	"net/http"
 	"regexp"
-	"time"
 
 	"github.com/sirupsen/logrus"
 )
 
-func req(url string) (string, error) {
+func (conf *tConf) req(url string) (string, error) {
 	var bytes []byte
-	timeout := time.Duration(5 * time.Second)
 	client := http.Client{
-		Timeout: timeout,
+		Timeout: conf.RequestsTimeout,
 	}
 	resp, err := client.Get(url)
 	if err == nil {

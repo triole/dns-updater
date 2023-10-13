@@ -42,6 +42,8 @@ func main() {
 	})
 	if conf.IPChanged || CLI.Force {
 		conf.iterDNSServicesAndPost()
+	} else {
+		lg.Info("skip dns update")
 	}
 }
 

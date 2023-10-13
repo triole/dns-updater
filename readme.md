@@ -3,7 +3,6 @@
 <!-- toc -->
 
 - [Config](#config)
-- [Help](#help)
 
 <!-- /toc -->
 
@@ -11,15 +10,32 @@ A simple dns update tool that is used to regularly retrieve the current ip and s
 
 ## Config
 
-The configuration is auto detected if not defined by the `-c` argument. The file is looked for in the following order. The first that exists will be taken.
+The configuration is in `toml` format and auto detected if not defined by the `-c` argument. The file is looked for in the following order. The first that exists will be taken.
 
 - binary folder + dns-updater.toml
-- ${HOME}/.conf/dns-updater/conf.yaml
 - ${HOME}/.conf/dns-updater/conf.toml
-- ${HOME}/.config/dns-updater/conf.yaml
 - ${HOME}/.config/dns-updater/conf.toml
 
-Config examples can be found in the `examples` folder.
+This is how a config looks like:
+
+```go mdox-exec="cat examples/conf.toml"
+retrieval_urls = [
+  "https://api.ip.sb/ip",
+  "http://icanhazip.com",
+  "https://ident.me",
+  "http://ipecho.net/plain",
+  "http://plain-text-ip.com",
+  "https://api.ipify.org?format=text",
+  "https://wtfismyip.com/text",
+  "https://jsonip.com",
+]
+
+[[dynamic_name_services]]
+method = "get"
+url = "http://anydnsservice.com?user={{.hostname}}&pass={{.token}}&hostname={{.hostname}}&myip={{.ip}}"
+hostname = "my_hostname"
+token = "my_token"
+```
 
 ## Help
 
@@ -28,17 +44,19 @@ Config examples can be found in the `examples` folder.
 Send update requests containing the current external ip to a dns service
 
 Flags:
-  -h, --help            Show context-sensitive help.
-  -j, --info            just display connection information, no dyndns update at
-                        all
+  -h, --help                      Show context-sensitive help.
   -c, --config="/home/ole/.conf/dns-updater/conf.toml"
-                        config file to use
-  -g, --list            list embedded configs
-  -f, --force           force update request irrespective of the current ip
-  -i, --ip=STRING       use a specific ip to update
-  -l, --logfile="/home/ole/.var/log/dns-updater.log"
-                        file to process, positional required
-  -d, --debug           enable debug output
-  -n, --dry-run         do not send update request
-  -V, --version-flag    display version
+                                  config file to use
+  -f, --force                     force update request irrespective of the
+                                  current ip
+  -p, --ip=STRING                 use a specific ip to update
+  -l, --log-file="/dev/stdout"    file to process, positional required
+  -e, --log-level="info"          log level
+      --log-no-colors             disable output colours, print plain text
+      --log-json                  enable json log, instead of text one
+  -d, --data-json="/tmp/dns-updater.json"
+                                  json file to store ip information to be read
+                                  in later runs
+  -n, --dry-run                   do not send update request
+  -V, --version-flag              display version
 ```

@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/triole/logseal"
 )
@@ -24,19 +25,23 @@ func (conf *tConf) execURLTemplate(dns tDNS) (s string) {
 }
 
 func (conf *tConf) makeUpdateRequest(dns tDNS) (err error) {
-	var client http.Client
 	var req *http.Request
 	var response *http.Response
+	client := http.Client{
+		Timeout: conf.RequestsTimeout,
+	}
 
+	dns.Method = strings.ToUpper(dns.Method)
 	dns.URL = conf.execURLTemplate(dns)
-	req, err = http.NewRequest("GET", dns.URL, nil)
+	req, err = http.NewRequest(dns.Method, dns.URL, nil)
 	lg.IfErrError("can not initialize request", logseal.F{
 		"err": err,
 	})
 
 	if err == nil {
 		lg.Info("fire update request", logseal.F{
-			"url": dns.URL,
+			"method": dns.Method,
+			"url":    dns.URL,
 		})
 		response, err = client.Do(req)
 		lg.IfErrError(
