@@ -1,30 +1,43 @@
 package main
 
 import (
-	"encoding/base64"
+	"bytes"
+	"html/template"
 	"io"
 	"net/http"
 
 	"github.com/triole/logseal"
 )
 
-func basicAuth(username, password string) string {
-	auth := username + ":" + password
-	return base64.StdEncoding.EncodeToString([]byte(auth))
+func (conf *tConf) execURLTemplate(dns tDNS) (s string) {
+	buf := &bytes.Buffer{}
+	templ, err := template.New("url").Parse(dns.URL)
+	if err == nil {
+		templ.Execute(buf, map[string]interface{}{
+			"ip":       conf.IPData.Current.IP,
+			"hostname": dns.Hostname,
+			"token":    dns.Token,
+		})
+		s = buf.String()
+	}
+	return
 }
 
-func makeUpdateRequest(dns tDNS) (err error) {
+func (conf *tConf) makeUpdateRequest(dns tDNS) (err error) {
 	var client http.Client
 	var req *http.Request
 	var response *http.Response
 
+	dns.URL = conf.execURLTemplate(dns)
 	req, err = http.NewRequest("GET", dns.URL, nil)
 	lg.IfErrError("can not initialize request", logseal.F{
 		"err": err,
 	})
 
 	if err == nil {
-		req.Header.Add("Authorization", "Basic "+basicAuth(dns.Hostname, dns.Token))
+		lg.Info("fire update request", logseal.F{
+			"url": dns.URL,
+		})
 		response, err = client.Do(req)
 		lg.IfErrError(
 			"update request failed", logseal.F{

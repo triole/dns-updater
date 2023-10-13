@@ -23,10 +23,10 @@ func (conf *tConf) getMyIP() (err error) {
 
 func (conf *tConf) getMyIPWorker() (ip string, err error) {
 	ch := make(chan string)
-	for _, url := range conf.Retrieval.URLs {
+	for _, url := range conf.RetrievalURLs {
 		go conf.fetchIP(url, ch)
 	}
-	for i := 0; i < len(conf.Retrieval.URLs); i++ {
+	for i := 0; i < len(conf.RetrievalURLs); i++ {
 		ip = <-ch
 		if ip != "" {
 			break
