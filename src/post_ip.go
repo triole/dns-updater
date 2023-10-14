@@ -21,5 +21,5 @@ func (conf *tConf) execURLTemplate(dns tDNS) (s string) {
 
 func (conf *tConf) makeUpdateRequest(dns tDNS) {
 	dns.URL = conf.execURLTemplate(dns)
-	_ = conf.req(dns.Token, dns.URL, regexIPv4)
+	_ = conf.req(dns.Method, dns.URL, regexIPv4)
 }
