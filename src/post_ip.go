@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"html/template"
+	"net/url"
 )
 
 func (conf *tConf) execURLTemplate(dns tDNS) (s string) {
@@ -10,9 +11,9 @@ func (conf *tConf) execURLTemplate(dns tDNS) (s string) {
 	templ, err := template.New("url").Parse(dns.URL)
 	if err == nil {
 		templ.Execute(buf, map[string]interface{}{
-			"ip":       conf.IPData.Current.IP,
-			"hostname": dns.Hostname,
-			"token":    dns.Token,
+			"ip":       url.QueryEscape(conf.IPData.Current.IP),
+			"hostname": url.QueryEscape(dns.Hostname),
+			"token":    url.QueryEscape(dns.Token),
 		})
 		s = buf.String()
 	}
