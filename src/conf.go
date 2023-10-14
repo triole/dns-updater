@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"sort"
 	"time"
 
 	"github.com/pelletier/go-toml"
@@ -40,5 +41,6 @@ func readConf(filename string) (conf tConf) {
 	for idx, el := range conf.RetrievalURLs {
 		conf.RetrievalURLs[idx] = os.ExpandEnv(el)
 	}
+	sort.Strings(conf.RetrievalURLs)
 	return conf
 }

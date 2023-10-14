@@ -2,8 +2,6 @@ package main
 
 import (
 	"errors"
-	"io"
-	"net/http"
 	"time"
 
 	"github.com/triole/logseal"
@@ -42,29 +40,6 @@ func (conf *tConf) getMyIPWorker() (ip string, err error) {
 }
 
 func (conf *tConf) fetchIP(url string, ch chan<- string) {
-	var ip string
-	timeout := time.Duration(time.Duration(conf.RequestsTimeout) * time.Second)
-	client := http.Client{
-		Timeout: timeout,
-	}
-	lg.Debug("fetch current ip", logseal.F{
-		"url": url,
-	})
-	resp, err := client.Get(url)
-	if err == nil {
-		body, _ := io.ReadAll(resp.Body)
-		ip = rxFindIP(string(body))
-		if ip != "" {
-			lg.Info("fetch current ip success", logseal.F{
-				"url": url,
-				"ip":  ip,
-			})
-		}
-	} else {
-		lg.Error("request failed", logseal.F{
-			"url": url,
-		})
-		conf.ExitCode = 1
-	}
-	ch <- ip
+	req := conf.req("get", url, regexIPv4)
+	ch <- req.Match
 }

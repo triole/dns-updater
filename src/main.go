@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
+	"os"
 
-	"github.com/sirupsen/logrus"
 	"github.com/triole/logseal"
 )
 
@@ -22,15 +22,22 @@ func main() {
 		"datajson": conf.DataJSONFile,
 	})
 
-	_ = conf.getMyIP()
+	if CLI.TestRetrieval {
+		for _, url := range conf.RetrievalURLs {
+			res := conf.req("get", url, regexIPv4)
+			conf.ExitCode += len(res.Errors)
+		}
+		conf.exit()
+	}
+
+	err := conf.getMyIP()
+	if err != nil {
+		lg.Fatal("ip retrieval failed", logseal.F{"ip": conf.IPData.Current.IP})
+	}
+
 	if CLI.IP != "" {
 		conf.IPData.Current.IP = CLI.IP
 		CLI.Force = true
-	}
-
-	// conf.IPData.Current, _ = conf.getCurrentIPData(conf)
-	if conf.IPData.Current.IP == "" {
-		lg.Fatal("ip retrieval failed", logseal.F{"ip": conf.IPData.Current.IP})
 	}
 
 	conf.IPData.Old = conf.readIPDataJSON()
@@ -46,18 +53,16 @@ func main() {
 	} else {
 		lg.Info("skip dns update")
 	}
-	lg.Info("done", logseal.F{"exitcode": conf.ExitCode})
+	conf.exit()
 }
 
 func (conf *tConf) iterDNSServicesAndPost() {
 	for _, dns := range conf.DNSs {
-		err := conf.makeUpdateRequest(dns)
-		lg.IfErrError(
-			err,
-			"update request failed", logrus.Fields{
-				"current_ip": conf.IPData.Current.IP,
-				"err":        err,
-			},
-		)
+		conf.makeUpdateRequest(dns)
 	}
+}
+
+func (conf *tConf) exit() {
+	lg.Info("done", logseal.F{"exitcode": conf.ExitCode})
+	os.Exit(conf.ExitCode)
 }
