@@ -24,7 +24,7 @@ func main() {
 
 	if CLI.TestRetrieval {
 		for _, url := range conf.RetrievalURLs {
-			res := conf.req("get", url, regexIPv4)
+			res := conf.req("get", url, rxIPAdresses)
 			conf.ExitCode += len(res.Errors)
 		}
 		conf.exit()

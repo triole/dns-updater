@@ -40,6 +40,6 @@ func (conf *tConf) getMyIPWorker() (ip string, err error) {
 }
 
 func (conf *tConf) fetchIP(url string, ch chan<- string) {
-	req := conf.req("get", url, regexIPv4)
+	req := conf.req("get", url, rxIPAdresses)
 	ch <- req.Match
 }

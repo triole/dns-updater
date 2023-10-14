@@ -18,7 +18,7 @@ type tRequestResponse struct {
 	Errors []error
 }
 
-func (conf *tConf) req(method, url, matcher string) (rr tRequestResponse) {
+func (conf *tConf) req(method, url string, matchers []string) (rr tRequestResponse) {
 	var bytes []byte
 	var err error
 	var req *http.Request
@@ -63,7 +63,7 @@ func (conf *tConf) req(method, url, matcher string) (rr tRequestResponse) {
 				} else {
 					rr.Body = string(bytes)
 					if err == nil {
-						rr.Match = rxFind(matcher, rr.Body)
+						rr.Match = rxFindByList(rxIPAdresses, rr.Body)
 						if rr.Match == "" {
 							rr.Errors = append(rr.Errors, errors.New("regex did not match"))
 						}
@@ -79,7 +79,7 @@ func (conf *tConf) req(method, url, matcher string) (rr tRequestResponse) {
 			} else {
 				if lg.Logrus.Level > 4 {
 					fields["body"] = rr.Body
-					fields["matcher"] = matcher
+					fields["matchers"] = matchers
 				}
 				lg.Error("request fail", fields)
 			}
