@@ -1,16 +1,27 @@
 retrieval_urls = [
-  "https://api.ip.sb/ip",
+  "https://api.ipify.org?format=text",
+  "https://www.whatismypublicip.com/ip-lookup/",
+  "https://www.showmyip.com/",
+  "https://www.expressvpn.com/what-is-my-ip",
+  "https://iplocation.com/",
+  "https://browserleaks.com/ip",
   "http://icanhazip.com",
   "https://ident.me",
   "http://ipecho.net/plain",
-  "http://plain-text-ip.com",
-  "https://api.ipify.org?format=text",
   "https://wtfismyip.com/text",
   "https://jsonip.com",
 ]
 
 [[dynamic_name_services]]
 method = "get"
-url = "http://anydnsservice.com?user={{.hostname}}&pass={{.token}}&hostname={{.hostname}}&myip={{.ip}}"
-hostname = "my_hostname"
-token = "my_token"
+url = "http://anydns.service/update?user={{.hostname}}&pass={{.token}}&hostname={{.hostname}}&myip={{.ip}}"
+hostname = "hostname"
+token = "token"
+ipv6 = false
+
+[[dynamic_name_services]]
+method = "get"
+url = "http://anydns.service/update?user={{.hostname}}&pass={{.token}}&hostname={{.hostname}}&myip={{.ip}}"
+hostname = "hostname"
+token = "token"
+ipv6 = true
