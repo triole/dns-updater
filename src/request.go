@@ -41,7 +41,7 @@ func (conf *tConf) req(method, url string) (rr tRequestResponse) {
 		req, err = http.NewRequest(rr.Method, rr.URL, nil)
 		if err != nil {
 			rr.Errors = append(rr.Errors, err)
-			lg.Error("can not initialize request", reqFields(rr))
+			lg.Error("can not initialize request", conf.reqFields(rr))
 		}
 		start := time.Now()
 		response, err = client.Do(req)
@@ -49,12 +49,12 @@ func (conf *tConf) req(method, url string) (rr tRequestResponse) {
 
 		if err != nil {
 			rr.Errors = append(rr.Errors, err)
-			lg.Error("request failed", reqFields(rr))
+			lg.Error("request failed", conf.reqFields(rr))
 		}
 
 		if response == nil {
 			rr.Errors = append(rr.Errors, errors.New("response is empty"))
-			lg.Error("request response is empty", reqFields(rr))
+			lg.Error("request response is empty", conf.reqFields(rr))
 		} else {
 			rr.Status = response.StatusCode
 			if rr.Status == 200 {
@@ -64,13 +64,13 @@ func (conf *tConf) req(method, url string) (rr tRequestResponse) {
 					rr.Body = string(bytes)
 				} else {
 					rr.Errors = append(rr.Errors, err)
-					lg.IfErrError("can not read body", reqFields(rr))
+					lg.IfErrError("can not read body", conf.reqFields(rr))
 				}
 			} else {
 				rr.Errors = append(rr.Errors, errors.New("status code not 200"))
 			}
 
-			fields := reqFields(rr)
+			fields := conf.reqFields(rr)
 			if rr.Body != "" {
 				lg.Info("request success", fields)
 			} else {
@@ -84,7 +84,7 @@ func (conf *tConf) req(method, url string) (rr tRequestResponse) {
 	return
 }
 
-func reqFields(rr tRequestResponse) logseal.F {
+func (conf *tConf) reqFields(rr tRequestResponse) logseal.F {
 	return logseal.F{
 		"method":        rr.Method,
 		"url":           rr.URL,
