@@ -42,7 +42,7 @@ func (conf *tConf) writeIPDataJSON() {
 	var err error
 	dnss := conf.DNSs
 	for idx := range dnss {
-		dnss[idx].Token = "<REMOVED>"
+		dnss[idx].Token = dummyStr
 	}
 	JSONstring, _ := json.Marshal(dnss)
 	err = os.WriteFile(conf.DataJSONFile, JSONstring, 0644)

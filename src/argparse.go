@@ -14,6 +14,10 @@ import (
 	"github.com/triole/logseal"
 )
 
+const (
+	dummyStr = "xxxx"
+)
+
 var (
 	// BUILDTAGS are the ld flags that get injected during the build process
 	BUILDTAGS      string

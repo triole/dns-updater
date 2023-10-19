@@ -4,6 +4,7 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 
@@ -19,7 +20,7 @@ type tRequestResponse struct {
 	Errors       []error
 }
 
-func (conf *tConf) req(method, url string) (rr tRequestResponse) {
+func (conf *tConf) req(method, urlstr string) (rr tRequestResponse) {
 	var bytes []byte
 	var err error
 	var req *http.Request
@@ -29,7 +30,7 @@ func (conf *tConf) req(method, url string) (rr tRequestResponse) {
 		Timeout: conf.RequestsTimeout,
 	}
 
-	rr.URL = url
+	rr.URL = urlstr
 	rr.Method = strings.ToUpper(method)
 
 	if err == nil {
@@ -87,9 +88,17 @@ func (conf *tConf) req(method, url string) (rr tRequestResponse) {
 func (conf *tConf) reqFields(rr tRequestResponse) logseal.F {
 	return logseal.F{
 		"method":        rr.Method,
-		"url":           rr.URL,
+		"url":           conf.removeToken(rr.URL),
 		"status":        rr.Status,
 		"errors":        rr.Errors,
 		"response_time": rr.ResponseTime,
 	}
+}
+
+func (conf *tConf) removeToken(urlstr string) (r string) {
+	r = urlstr
+	for _, dns := range conf.DNSs {
+		r = strings.Replace(r, url.QueryEscape(dns.Token), dummyStr, -1)
+	}
+	return
 }
