@@ -11,7 +11,7 @@ func (conf *tConf) execURLTemplate(dns tDNS) (s string) {
 	templ, err := template.New("url").Parse(dns.URL)
 	if err == nil {
 		templ.Execute(buf, map[string]interface{}{
-			"ip":       url.QueryEscape(conf.IPData.Current.IP),
+			"ip":       url.QueryEscape(dns.IPToSend.IP),
 			"hostname": url.QueryEscape(dns.Hostname),
 			"token":    url.QueryEscape(dns.Token),
 		})
@@ -22,5 +22,5 @@ func (conf *tConf) execURLTemplate(dns tDNS) (s string) {
 
 func (conf *tConf) makeUpdateRequest(dns tDNS) {
 	dns.URL = conf.execURLTemplate(dns)
-	_ = conf.req(dns.Method, dns.URL, rxIPAdresses)
+	_ = conf.req(dns.Method, dns.URL)
 }

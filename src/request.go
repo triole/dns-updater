@@ -5,20 +5,21 @@ import (
 	"io"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/triole/logseal"
 )
 
 type tRequestResponse struct {
-	Method string
-	URL    string
-	Match  string
-	Status int
-	Body   string
-	Errors []error
+	Method       string
+	URL          string
+	Status       int
+	Body         string
+	ResponseTime time.Duration
+	Errors       []error
 }
 
-func (conf *tConf) req(method, url string, matchers []string) (rr tRequestResponse) {
+func (conf *tConf) req(method, url string) (rr tRequestResponse) {
 	var bytes []byte
 	var err error
 	var req *http.Request
@@ -42,8 +43,10 @@ func (conf *tConf) req(method, url string, matchers []string) (rr tRequestRespon
 			rr.Errors = append(rr.Errors, err)
 			lg.Error("can not initialize request", reqFields(rr))
 		}
-
+		start := time.Now()
 		response, err = client.Do(req)
+		rr.ResponseTime = time.Since(start)
+
 		if err != nil {
 			rr.Errors = append(rr.Errors, err)
 			lg.Error("request failed", reqFields(rr))
@@ -57,31 +60,24 @@ func (conf *tConf) req(method, url string, matchers []string) (rr tRequestRespon
 			if rr.Status == 200 {
 				defer response.Body.Close()
 				bytes, err = io.ReadAll(response.Body)
-				if err != nil {
+				if err == nil {
+					rr.Body = string(bytes)
+				} else {
 					rr.Errors = append(rr.Errors, err)
 					lg.IfErrError("can not read body", reqFields(rr))
-				} else {
-					rr.Body = string(bytes)
-					if err == nil {
-						rr.Match = rxFindByList(rxIPAdresses, rr.Body)
-						if rr.Match == "" {
-							rr.Errors = append(rr.Errors, errors.New("regex did not match"))
-						}
-					}
 				}
 			} else {
 				rr.Errors = append(rr.Errors, errors.New("status code not 200"))
 			}
 
 			fields := reqFields(rr)
-			if rr.Match != "" {
+			if rr.Body != "" {
 				lg.Info("request success", fields)
 			} else {
 				if lg.Logrus.Level > 4 {
 					fields["body"] = rr.Body
-					fields["matchers"] = matchers
 				}
-				lg.Error("request fail", fields)
+				lg.Error("request response body empty", fields)
 			}
 		}
 	}
@@ -90,10 +86,10 @@ func (conf *tConf) req(method, url string, matchers []string) (rr tRequestRespon
 
 func reqFields(rr tRequestResponse) logseal.F {
 	return logseal.F{
-		"method": rr.Method,
-		"url":    rr.URL,
-		"match":  rr.Match,
-		"status": rr.Status,
-		"errors": rr.Errors,
+		"method":        rr.Method,
+		"url":           rr.URL,
+		"status":        rr.Status,
+		"errors":        rr.Errors,
+		"response_time": rr.ResponseTime,
 	}
 }

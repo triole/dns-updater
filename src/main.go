@@ -17,49 +17,59 @@ func main() {
 	})
 
 	conf := readConf(CLI.Config)
+	conf.readOldIPDataJSON()
+	fmt.Printf("%+v\n", conf.OldIPDataJSON)
+
 	lg.Debug("config layout and data json location", logseal.F{
 		"conf":     fmt.Sprintf("%+v", conf),
 		"datajson": conf.DataJSONFile,
 	})
 
 	if CLI.TestRetrieval {
+		ch := make(chan tIPDataSet, 1)
 		for _, url := range conf.RetrievalURLs {
-			res := conf.req("get", url, rxIPAdresses)
-			conf.ExitCode += len(res.Errors)
+			conf.fetchIP(url, ch)
+			<-ch
 		}
 		conf.exit()
 	}
 
-	err := conf.getMyIP()
-	if err != nil {
-		lg.Fatal("ip retrieval failed", logseal.F{"ip": conf.IPData.Current.IP})
-	}
-
-	if CLI.IP != "" {
-		conf.IPData.Current.IP = CLI.IP
-		CLI.Force = true
-	}
-
-	conf.IPData.Old = conf.readIPDataJSON()
-	conf.IPChanged = conf.IPData.Old.IP != conf.IPData.Current.IP
-	lg.Info("ip comparison", logseal.F{
-		"former":  fmt.Sprintf("%+v", conf.IPData.Old),
-		"current": fmt.Sprintf("%+v", conf.IPData.Current),
-		"changed": conf.IPChanged,
-	})
-	if conf.IPChanged || CLI.Force {
-		conf.writeIPDataJSON(conf.IPData.Current)
-		conf.iterDNSServicesAndPost()
-	} else {
-		lg.Info("skip dns update")
-	}
+	conf.getMyIP()
+	conf.iterDNSServicesAndPost()
 	conf.exit()
 }
 
 func (conf *tConf) iterDNSServicesAndPost() {
 	for _, dns := range conf.DNSs {
-		conf.makeUpdateRequest(dns)
+		oldDNSsIP := conf.pickOldMatchingDNSsIP(dns)
+		conf.IPChanged = dns.IPToSend.IP != oldDNSsIP
+
+		lg.Info("ip comparison", logseal.F{
+			"former":  fmt.Sprintf("%+v", oldDNSsIP),
+			"current": fmt.Sprintf("%+v", dns.IPToSend.IP),
+			"changed": conf.IPChanged,
+		})
+		if conf.IPChanged || conf.ForceUpdate {
+			conf.writeIPDataJSON()
+		} else {
+			lg.Info("skip dns update, unchanged")
+		}
+		if !CLI.DryRun {
+			conf.makeUpdateRequest(dns)
+		} else {
+			lg.Info("skip dns update, dry run")
+		}
 	}
+}
+
+func (conf *tConf) pickOldMatchingDNSsIP(dns tDNS) (ip string) {
+	for _, oldDNS := range conf.OldIPDataJSON {
+		if oldDNS.URL == dns.URL &&
+			oldDNS.Hostname == dns.Hostname && oldDNS.IPv6 == dns.IPv6 {
+			ip = oldDNS.IPToSend.IP
+		}
+	}
+	return
 }
 
 func (conf *tConf) exit() {

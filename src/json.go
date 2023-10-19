@@ -8,7 +8,7 @@ import (
 	"github.com/triole/logseal"
 )
 
-func (conf *tConf) readIPDataJSON() (ipd tIPDataSet) {
+func (conf *tConf) readOldIPDataJSON() (dnss tDNSs) {
 	lg.Debug("read data json", logseal.F{
 		"path": conf.DataJSONFile,
 	})
@@ -21,7 +21,7 @@ func (conf *tConf) readIPDataJSON() (ipd tIPDataSet) {
 		raw, err := os.ReadFile(conf.DataJSONFile)
 		lg.IfErrError("read", conf.DataJSONFile, err, false)
 		if err == nil {
-			err = json.Unmarshal(raw, &ipd)
+			err = json.Unmarshal(raw, &dnss)
 			lg.IfErrError("can not unmarshal", logseal.F{
 				"path":  conf.DataJSONFile,
 				"error": err,
@@ -29,17 +29,22 @@ func (conf *tConf) readIPDataJSON() (ipd tIPDataSet) {
 			if err == nil {
 				lg.Debug("data json info", logseal.F{
 					"path":    conf.DataJSONFile,
-					"content": fmt.Sprintf("%+v", ipd),
+					"content": fmt.Sprintf("%+v", dnss),
 				})
+				conf.OldIPDataJSON = dnss
 			}
 		}
 	}
 	return
 }
 
-func (conf *tConf) writeIPDataJSON(ipd tIPDataSet) {
+func (conf *tConf) writeIPDataJSON() {
 	var err error
-	JSONstring, _ := json.Marshal(ipd)
+	dnss := conf.DNSs
+	for idx := range dnss {
+		dnss[idx].Token = "<REMOVED>"
+	}
+	JSONstring, _ := json.Marshal(dnss)
 	err = os.WriteFile(conf.DataJSONFile, JSONstring, 0644)
 	lg.IfErrError("unable to write file",
 		logseal.F{

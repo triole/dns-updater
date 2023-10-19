@@ -29,7 +29,7 @@ var CLI struct {
 	IP            string `help:"use a specific ip to update" short:"p"`
 	Timeout       int64  `help:"web requests timeout in seconds" default:"5" short:"t"`
 	LogFile       string `help:"log file" default:"${logfile}" short:"l"`
-	LogLevel      string `help:"log level" short:"e" default:"info" enum:"debug,info,error"`
+	LogLevel      string `help:"log level" short:"e" default:"info" enum:"trace,debug,info,error"`
 	LogNoColors   bool   `help:"disable output colours, print plain text"`
 	LogJSON       bool   `help:"enable json log, instead of text one"`
 	TestRetrieval bool   `help:"test configured retrieval urls only"`

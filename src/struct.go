@@ -3,9 +3,8 @@ package main
 import "time"
 
 type tConf struct {
-	DNSs               []tDNS   `toml:"dynamic_name_services"`
+	DNSs               tDNSs    `toml:"dynamic_name_services"`
 	RetrievalURLs      []string `toml:"retrieval_urls"`
-	IPData             tIPData
 	DataJSONFile       string
 	IPChanged          bool
 	RequestsTimeoutInt int64
@@ -14,21 +13,22 @@ type tConf struct {
 	DryRun             bool
 	Debug              bool
 	ExitCode           int
+	OldIPDataJSON      tDNSs
 }
+
+type tDNSs []tDNS
 
 type tDNS struct {
 	Hostname string `toml:"hostname"`
 	Token    string `toml:"token"`
 	URL      string `toml:"url"`
 	Method   string `toml:"method"`
-}
-
-type tIPData struct {
-	Current tIPDataSet `json:"current"`
-	Old     tIPDataSet `json:"old"`
+	IPv6     bool   `toml:"ipv6"`
+	IPToSend tIPDataSet
 }
 
 type tIPDataSet struct {
 	Time time.Time `json:"time"`
 	IP   string    `json:"ip"`
+	IPv6 bool      `json:"ipv6"`
 }
