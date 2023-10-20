@@ -1,11 +1,5 @@
 # DNS-Updater ![build](https://github.com/triole/dns-updater/actions/workflows/build.yaml/badge.svg)
 
-<!-- toc -->
-
-- [Config](#config)
-
-<!-- /toc -->
-
 A simple dns update tool that is used to regularly retrieve the current ip and send an update request to a dynamic dns provider. Currently only supports [spdns](https://www.spdyn.de).
 
 ## Config
